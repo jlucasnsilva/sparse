@@ -57,21 +57,20 @@ func (s Scanner) Consume() (ch rune, next Scanner) {
 		return 0, s
 	}
 
-	n := s
-	n.pos++
-	if n.pos == len(n.text) {
-		n.err = io.EOF
-		return 0, n
+	s.pos++
+	if s.pos == len(s.text) {
+		s.err = io.EOF
+		return 0, s
 	}
 
-	ch = n.Head()
+	ch = s.Head()
 	if ch == '\n' {
-		n.col = 0
-		n.row++
+		s.col = 0
+		s.row++
 	} else {
-		n.col++
+		s.col++
 	}
-	return ch, n
+	return ch, s
 }
 
 // ConsumeWhile ...
@@ -81,31 +80,25 @@ func (s Scanner) ConsumeWhile(pred func(rune) bool) (string, Scanner) {
 	}
 
 	tlen := len(s.text)
-	n := s
-	n.pos++
-	if n.pos == tlen {
-		n.err = io.EOF
-		return "", n
+	if s.pos == tlen {
+		s.err = io.EOF
+		return "", s
 	}
 
-	ch := n.Head()
-	start := n.col
-	for pred(ch) && n.pos < tlen {
+	ch := s.Head()
+	start := s.pos
+	for pred(ch) && s.pos < tlen {
 		if ch == '\n' {
-			n.col = 0
-			n.row++
+			s.col = 0
+			s.row++
 		} else {
-			n.col++
+			s.col++
 		}
 
-		n.pos++
-		if n.pos < tlen {
-			ch = n.Head()
+		s.pos++
+		if s.pos < tlen {
+			ch = s.Head()
 		}
 	}
-
-	if n.pos == tlen {
-		n.pos--
-	}
-	return string(n.text[start : n.col+1]), n
+	return string(s.text[start:s.pos]), s
 }
