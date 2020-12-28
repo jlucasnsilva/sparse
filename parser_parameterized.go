@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jlucasnsilva/sparse/ast"
+	"github.com/jlucasnsilva/sparse/fsa"
 )
 
 // ThisRune ...
@@ -27,10 +28,26 @@ func OneRune(pred func(r rune) bool) ParserFunc {
 
 // OneString ...
 func OneString(bracket rune) ParserFunc {
+	a := fsa.String(bracket)
 	return func(s Scanner) (Scanner, ast.Node, error) {
-		// parseFirst := ThisRune(bracket)
-		// r, _, err := parseFirst(s)
-		return s, nil, nil
+		var str string
+
+		parseFirst := ThisRune(bracket)
+		r, _, err := parseFirst(s)
+		if err != nil {
+			return r, nil, err
+		}
+
+		str, r = r.ConsumeWhile(a.IsValid)
+		if err := r.Err(); err != nil {
+			return r, nil, err
+		}
+
+		r, _, err = parseFirst(r)
+		if err != nil {
+			return r, nil, err
+		}
+		return s, &ast.String{Value: str, Bracket: bracket}, nil
 	}
 }
 

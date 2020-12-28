@@ -19,6 +19,11 @@ type (
 	identifierAutomata struct {
 		count int
 	}
+
+	stringAutomata struct {
+		bracket rune
+		scape   bool
+	}
 )
 
 // Configuration ...
@@ -31,6 +36,10 @@ var (
 
 	Number = func() Automata {
 		return &numberAutomata{}
+	}
+
+	String = func(bracket rune) Automata {
+		return &stringAutomata{bracket: bracket}
 	}
 )
 
@@ -57,6 +66,16 @@ func (a *identifierAutomata) IsValid(r rune) bool {
 		return isIdentifierFirst(r)
 	}
 	return isIdentifier(r)
+}
+
+func (a *stringAutomata) IsValid(r rune) bool {
+	res := r != a.bracket || a.scape
+	if r == '\\' {
+		a.scape = true
+	} else {
+		a.scape = false
+	}
+	return res
 }
 
 func isIdentifierFirst(r rune) bool {
