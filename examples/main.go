@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/jlucasnsilva/sparse"
+	"github.com/jlucasnsilva/sparse/ast"
 )
 
 // 01234567890123456
@@ -21,7 +22,7 @@ func main() {
 	fmt.Println(text)
 	{
 		r := s
-		ch := r.Head()
+		ch, r := r.Consume()
 		for r.Err() == nil {
 			fmt.Printf("%c", ch)
 			ch, r = r.Consume()
@@ -29,14 +30,17 @@ func main() {
 		fmt.Println("")
 	}
 
-	fmt.Printf("\t%+v\n", s)
-
-	var node sparse.TreeNode
+	var node ast.Node
 	s, node, err = sparse.Number(s)
 	fmt.Printf("node = %+v, error = %v\n", node, err)
-	fmt.Printf("\t%+v\n", s)
 
 	s, node, err = sparse.Identifier(s)
 	fmt.Printf("node = %+v, error = %v\n", node, err)
-	fmt.Printf("\t%+v\n", s)
+
+	prune := sparse.ThisRune(',')
+	s, node, err = prune(s)
+	fmt.Printf("node = %+v, error = %v\n", node, err)
+
+	s, node, err = sparse.Identifier(s)
+	fmt.Printf("node = %+v, error = %v\n", node, err)
 }

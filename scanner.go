@@ -46,24 +46,23 @@ func (s Scanner) Err() error {
 	return s.err
 }
 
-// Head ...
-func (s Scanner) Head() rune {
+// First ...
+func (s Scanner) First() rune {
 	return s.text[s.pos]
 }
 
 // Consume ...
 func (s Scanner) Consume() (ch rune, next Scanner) {
+	if s.pos == len(s.text) {
+		s.err = io.EOF
+	}
 	if s.err != nil {
 		return 0, s
 	}
 
-	s.pos++
-	if s.pos == len(s.text) {
-		s.err = io.EOF
-		return 0, s
-	}
+	ch = s.First()
 
-	ch = s.Head()
+	s.pos++
 	if ch == '\n' {
 		s.col = 0
 		s.row++
@@ -85,7 +84,7 @@ func (s Scanner) ConsumeWhile(pred func(rune) bool) (string, Scanner) {
 		return "", s
 	}
 
-	ch := s.Head()
+	ch := s.First()
 	start := s.pos
 	for pred(ch) && s.pos < tlen {
 		if ch == '\n' {
@@ -97,7 +96,7 @@ func (s Scanner) ConsumeWhile(pred func(rune) bool) (string, Scanner) {
 
 		s.pos++
 		if s.pos < tlen {
-			ch = s.Head()
+			ch = s.First()
 		}
 	}
 	return string(s.text[start:s.pos]), s

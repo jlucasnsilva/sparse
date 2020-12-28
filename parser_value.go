@@ -3,10 +3,39 @@ package sparse
 import (
 	"errors"
 	"strconv"
-	"unicode"
+	"strings"
+
+	"github.com/jlucasnsilva/sparse/ast"
+	"github.com/jlucasnsilva/sparse/fsa"
 )
 
-func parseValueWithWhile(s Scanner, pred func(rune) bool, parse func(string) (TreeNode, error)) (Scanner, TreeNode, error) {
+// Number ...
+func Number(s Scanner) (Scanner, ast.Node, error) {
+	a := fsa.Number()
+	return parseValueWithWhile(s, a.IsValid, parseNumber)
+}
+
+// Identifier ...
+func Identifier(s Scanner) (Scanner, ast.Node, error) {
+	a := fsa.Identifier()
+	parse := func(value string) (ast.Node, error) {
+		if len(value) < 1 {
+			return nil, errors.New("Not an identifier")
+		}
+		return &ast.Identifier{Value: value}, nil
+	}
+	return parseValueWithWhile(s, a.IsValid, parse)
+}
+
+// Rune ...
+func Rune(s Scanner) (Scanner, ast.Node, error) {
+	parse := func(r rune) (ast.Node, error) {
+		return &ast.Rune{Value: r}, nil
+	}
+	return parseValue(s, parse)
+}
+
+func parseValueWithWhile(s Scanner, pred func(rune) bool, parse func(string) (ast.Node, error)) (Scanner, ast.Node, error) {
 	if err := s.Err(); err != nil {
 		return s, nil, err
 	}
@@ -14,7 +43,6 @@ func parseValueWithWhile(s Scanner, pred func(rune) bool, parse func(string) (Tr
 	if err := next.Err(); err != nil {
 		return next, nil, err
 	}
-
 	node, err := parse(value)
 	if err != nil {
 		return next, nil, err
@@ -22,71 +50,45 @@ func parseValueWithWhile(s Scanner, pred func(rune) bool, parse func(string) (Tr
 	return next, node, nil
 }
 
-// Number ...
-func Number(s Scanner) (Scanner, TreeNode, error) {
+func parseValue(s Scanner, parse func(rune) (ast.Node, error)) (Scanner, ast.Node, error) {
 	if err := s.Err(); err != nil {
 		return s, nil, err
 	}
-
-	isFloat := false
-	foundDot := false
-	isNumber := func(r rune) bool {
-		if foundDot {
-			isFloat = true
-		}
-		if r == '.' {
-			foundDot = true
-		}
-		return unicode.IsDigit(r) || r == '.' && !isFloat
-	}
-
-	numstr, next := s.ConsumeWhile(isNumber)
+	r, next := s.Consume()
 	if err := next.Err(); err != nil {
 		return next, nil, err
 	}
-	if slen := len(numstr); slen < 1 || isFloat && slen < 2 {
-		return next, nil, errors.New("Not a number")
-	}
-
-	var (
-		err  error
-		node TreeNode
-	)
-	if isFloat {
-		fnode := &FloatNode{}
-		fnode.Value, err = strconv.ParseFloat(numstr, 64)
-		node = fnode
-	} else {
-		inode := &IntNode{}
-		inode.Value, err = strconv.ParseUint(numstr, 10, 64)
-		node = inode
-	}
+	node, err := parse(r)
 	if err != nil {
-		return s, nil, err
+		return next, nil, err
 	}
 	return next, node, nil
 }
 
-// Identifier ...
-func Identifier(s Scanner) (Scanner, TreeNode, error) {
-	if err := s.Err(); err != nil {
-		return s, nil, err
+func parseNumber(value string) (ast.Node, error) {
+	isFloat := func(s string) bool {
+		return strings.ContainsRune(s, '.')
 	}
 
-	ok := false
-	isIdent := func(r rune) bool {
-		if !ok {
-			return unicode.IsLetter(r) || r == '_'
-		}
-		return unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_'
+	if slen := len(value); slen < 1 || isFloat(value) && slen < 2 {
+		return nil, errors.New("Not a number")
 	}
 
-	ident, next := s.ConsumeWhile(isIdent)
-	if err := next.Err(); err != nil {
-		return next, nil, err
+	var (
+		node ast.Node
+		err  error
+	)
+	if isFloat(value) {
+		fnode := &ast.Float{}
+		fnode.Value, err = strconv.ParseFloat(value, 64)
+		node = fnode
+	} else {
+		inode := &ast.Int{}
+		inode.Value, err = strconv.ParseUint(value, 10, 64)
+		node = inode
 	}
-	if len(ident) < 1 {
-		return next, nil, errors.New("Not a identifier")
+	if err != nil {
+		return nil, err
 	}
-	return next, &IdentifierNode{Value: ident}, nil
+	return node, nil
 }
