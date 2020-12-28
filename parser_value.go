@@ -15,14 +15,14 @@ func Number(s Scanner) (Scanner, ast.Node, error) {
 	return parseValueWithWhile(s, a.IsValid, parseNumber)
 }
 
-// Identifier ...
-func Identifier(s Scanner) (Scanner, ast.Node, error) {
-	a := fsa.Identifier()
+// Word ...
+func Word(s Scanner) (Scanner, ast.Node, error) {
+	a := fsa.Word()
 	parse := func(value string) (ast.Node, error) {
 		if len(value) < 1 {
-			return nil, errors.New("Not an identifier")
+			return nil, errors.New("Not an Word")
 		}
-		return &ast.Identifier{Value: value}, nil
+		return &ast.Word{Value: value}, nil
 	}
 	return parseValueWithWhile(s, a.IsValid, parse)
 }
@@ -31,6 +31,29 @@ func Identifier(s Scanner) (Scanner, ast.Node, error) {
 func Rune(s Scanner) (Scanner, ast.Node, error) {
 	parse := func(r rune) (ast.Node, error) {
 		return &ast.Rune{Value: r}, nil
+	}
+	return parseValue(s, parse)
+}
+
+// Blank ...
+func Blank(s Scanner) (Scanner, ast.Node, error) {
+	a := fsa.Blank()
+	parse := func(value string) (ast.Node, error) {
+		if len(value) < 1 {
+			return nil, errors.New("not white space")
+		}
+		return &ast.Blank{Value: len(value)}, nil
+	}
+	return parseValueWithWhile(s, a.IsValid, parse)
+}
+
+// Newline ...
+func Newline(s Scanner) (Scanner, ast.Node, error) {
+	parse := func(r rune) (ast.Node, error) {
+		if r != '\n' {
+			return nil, errors.New("Not a newline")
+		}
+		return &ast.Newline{}, nil
 	}
 	return parseValue(s, parse)
 }
