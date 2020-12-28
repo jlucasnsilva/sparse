@@ -16,7 +16,7 @@ type (
 		foundDot bool
 	}
 
-	identifierAutomata struct {
+	wordAutomata struct {
 		count int
 	}
 
@@ -28,10 +28,8 @@ type (
 
 // Configuration ...
 var (
-	Identifier = func() Automata {
-		return AutomataFunc(func(r rune) bool {
-			return isIdentifierFirst(r) || unicode.IsDigit(r)
-		})
+	Word = func() Automata {
+		return &wordAutomata{}
 	}
 
 	Number = func() Automata {
@@ -40,6 +38,12 @@ var (
 
 	String = func(bracket rune) Automata {
 		return &stringAutomata{bracket: bracket}
+	}
+
+	Blank = func() Automata {
+		return AutomataFunc(func(r rune) bool {
+			return unicode.IsSpace(r) && r != '\n'
+		})
 	}
 )
 
@@ -56,16 +60,16 @@ func (a *numberAutomata) IsValid(r rune) bool {
 	if r == '.' {
 		a.foundDot = true
 	}
-	return unicode.IsDigit(r) || r == '.' && !a.foundDot
+	return unicode.IsDigit(r) || r == '.' && !a.isFloat
 }
 
 // IsValid ...
-func (a *identifierAutomata) IsValid(r rune) bool {
+func (a *wordAutomata) IsValid(r rune) bool {
 	if a.count == 0 {
 		a.count++
-		return isIdentifierFirst(r)
+		return isWordFirst(r)
 	}
-	return isIdentifier(r)
+	return isWord(r)
 }
 
 func (a *stringAutomata) IsValid(r rune) bool {
@@ -78,10 +82,10 @@ func (a *stringAutomata) IsValid(r rune) bool {
 	return res
 }
 
-func isIdentifierFirst(r rune) bool {
+func isWordFirst(r rune) bool {
 	return unicode.IsLetter(r) || r == '_'
 }
 
-func isIdentifier(r rune) bool {
-	return isIdentifierFirst(r) || unicode.IsDigit(r)
+func isWord(r rune) bool {
+	return isWordFirst(r) || unicode.IsDigit(r)
 }
