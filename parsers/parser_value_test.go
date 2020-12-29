@@ -1,11 +1,11 @@
-package sparse
+package parsers
 
 import (
 	"fmt"
 	"strings"
 	"testing"
 
-	"github.com/jlucasnsilva/sparse/ast"
+	"github.com/jlucasnsilva/sparse"
 )
 
 type (
@@ -17,7 +17,7 @@ type (
 	parseValueTestUnit struct {
 		label  string
 		parser ParserFunc
-		check  func(ast.Node) (bool, string, string)
+		check  func(sparse.Node) (bool, string, string)
 	}
 )
 
@@ -58,7 +58,7 @@ func TestParseValue(t *testing.T) {
 	}
 }
 
-func checkUnit(check func(ast.Node) (bool, string, string), node ast.Node, err error) func(*testing.T) {
+func checkUnit(check func(sparse.Node) (bool, string, string), node sparse.Node, err error) func(*testing.T) {
 	return func(t *testing.T) {
 		if err != nil {
 			t.Error(err)
@@ -68,42 +68,42 @@ func checkUnit(check func(ast.Node) (bool, string, string), node ast.Node, err e
 	}
 }
 
-func createTestFloat(expect float64) func(ast.Node) (bool, string, string) {
-	return func(n ast.Node) (bool, string, string) {
-		_, ok := n.(*ast.Float)
-		e := ast.Float{Value: expect}
+func createTestFloat(expect float64) func(sparse.Node) (bool, string, string) {
+	return func(n sparse.Node) (bool, string, string) {
+		_, ok := n.(*Float)
+		e := Float{Value: expect}
 		return ok && n.Equals(&e), fmt.Sprint(expect), n.ValueString()
 	}
 }
 
-func createTestUint(expect uint64) func(ast.Node) (bool, string, string) {
-	return func(n ast.Node) (bool, string, string) {
-		_, ok := n.(*ast.Int)
-		e := ast.Int{Value: expect}
+func createTestUint(expect uint64) func(sparse.Node) (bool, string, string) {
+	return func(n sparse.Node) (bool, string, string) {
+		_, ok := n.(*Int)
+		e := Int{Value: expect}
 		return ok && n.Equals(&e), fmt.Sprint(expect), n.ValueString()
 	}
 }
 
-func createTestWord(expect string) func(ast.Node) (bool, string, string) {
-	return func(n ast.Node) (bool, string, string) {
-		_, ok := n.(*ast.Word)
-		e := ast.Word{Value: expect}
+func createTestWord(expect string) func(sparse.Node) (bool, string, string) {
+	return func(n sparse.Node) (bool, string, string) {
+		_, ok := n.(*Word)
+		e := Word{Value: expect}
 		return ok && n.Equals(&e), fmt.Sprint(expect), n.ValueString()
 	}
 }
 
-func createTestRune(expect rune) func(ast.Node) (bool, string, string) {
-	return func(n ast.Node) (bool, string, string) {
-		_, ok := n.(*ast.Rune)
-		e := ast.Rune{Value: expect}
+func createTestRune(expect rune) func(sparse.Node) (bool, string, string) {
+	return func(n sparse.Node) (bool, string, string) {
+		_, ok := n.(*Rune)
+		e := Rune{Value: expect}
 		return ok && n.Equals(&e), fmt.Sprint(expect), n.ValueString()
 	}
 }
 
-func createTestBlank(expect int) func(ast.Node) (bool, string, string) {
-	return func(n ast.Node) (bool, string, string) {
-		_, ok := n.(*ast.Blank)
-		e := ast.Blank{Value: expect}
+func createTestBlank(expect int) func(sparse.Node) (bool, string, string) {
+	return func(n sparse.Node) (bool, string, string) {
+		_, ok := n.(*Blank)
+		e := Blank{Value: expect}
 		return ok && n.Equals(&e), fmt.Sprintf("[blank:%v]", expect), n.ValueString()
 	}
 }

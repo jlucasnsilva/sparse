@@ -3,16 +3,14 @@ package sparse
 import (
 	"errors"
 	"fmt"
-
-	"github.com/jlucasnsilva/sparse/ast"
 )
 
 // And ...
 func And(parsers ...ParserFunc) ExprParserFunc {
-	return func(s Scanner) (Scanner, []ast.Node, error) {
+	return func(s Scanner) (Scanner, []Node, error) {
 		var (
-			nodes = make([]ast.Node, 0, 10)
-			node  ast.Node
+			nodes = make([]Node, 0, 10)
+			node  Node
 			err   error
 			r     = s
 		)
@@ -29,7 +27,7 @@ func And(parsers ...ParserFunc) ExprParserFunc {
 
 // Or ...
 func Or(parsers ...ParserFunc) ParserFunc {
-	return func(s Scanner) (Scanner, ast.Node, error) {
+	return func(s Scanner) (Scanner, Node, error) {
 		for _, p := range parsers {
 			if r, node, err := p(s); err == nil {
 				return r, node, nil
@@ -41,10 +39,10 @@ func Or(parsers ...ParserFunc) ParserFunc {
 
 // Some ...
 func Some(target ParserFunc, separator ParserFunc) ExprParserFunc {
-	return func(s Scanner) (Scanner, []ast.Node, error) {
+	return func(s Scanner) (Scanner, []Node, error) {
 		var (
-			nodes = make([]ast.Node, 0, 10)
-			node  ast.Node
+			nodes = make([]Node, 0, 10)
+			node  Node
 			err   error
 			r     = s
 			t     = r
