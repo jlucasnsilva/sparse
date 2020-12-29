@@ -26,26 +26,34 @@ type (
 	}
 )
 
-// Configuration ...
-var (
-	Word = func() Automata {
-		return &wordAutomata{}
-	}
+// Word ...
+func Word() Automata {
+	return &wordAutomata{}
+}
 
-	Number = func() Automata {
-		return &numberAutomata{}
-	}
+// Number ...
+func Number() Automata {
+	return &numberAutomata{}
+}
 
-	String = func(bracket rune) Automata {
-		return &stringAutomata{bracket: bracket}
-	}
+// String ...
+func String(bracket rune) Automata {
+	return &stringAutomata{bracket: bracket}
+}
 
-	Blank = func() Automata {
-		return AutomataFunc(func(r rune) bool {
-			return unicode.IsSpace(r) && r != '\n'
-		})
-	}
-)
+// Blank ...
+func Blank() Automata {
+	return AutomataFunc(func(r rune) bool {
+		return unicode.IsSpace(r) && r != '\n'
+	})
+}
+
+// Space ...
+func Space() Automata {
+	return AutomataFunc(func(r rune) bool {
+		return unicode.IsSpace(r)
+	})
+}
 
 // IsValid ...
 func (a AutomataFunc) IsValid(r rune) bool {
@@ -72,6 +80,7 @@ func (a *wordAutomata) IsValid(r rune) bool {
 	return isWord(r)
 }
 
+// IsValid ...
 func (a *stringAutomata) IsValid(r rune) bool {
 	res := r != a.bracket || a.scape
 	if r == '\\' {

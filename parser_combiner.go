@@ -49,15 +49,22 @@ func Some(target ParserFunc, separator ParserFunc) ExprParserFunc {
 			r     = s
 			t     = r
 		)
-		for err == nil {
-			if t, node, err = target(r); err == nil {
-				nodes = append(nodes, node)
-				r = t
-			}
-		}
-		if len(nodes) < 1 {
+
+		if r, node, err = target(r); err != nil {
 			return s, nil, errors.New("not a single match")
 		}
-		return r, nodes, nil
+		nodes = append(nodes, node)
+
+		for true {
+			if t, node, err = target(r); err != nil {
+				return r, nodes, nil
+			}
+			if t, node, err = target(t); err != nil {
+				return r, nil, errors.New("expression ended on a separator")
+			}
+			nodes = append(nodes, node)
+			r = t
+		}
+		return s, nil, nil
 	}
 }
