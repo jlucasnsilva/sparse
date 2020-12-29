@@ -162,7 +162,7 @@ func (n *Rune) ValueString() string {
 // Equals ...
 func (n *String) Equals(m Node) bool {
 	v, ok := m.(*String)
-	return ok && v.Value == n.Value
+	return ok && v.Value == n.Value && v.Bracket == n.Bracket
 }
 
 // Child ...
