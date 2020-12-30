@@ -95,7 +95,7 @@ func (n *Rune) Children() int {
 	panic("Nodes of type 'Rune' don't have children")
 }
 
-// ValueString ...
-func (n *Rune) ValueString() string {
-	return fmt.Sprintf("'%c'", n.Value)
+// String ...
+func (n *Rune) String() string {
+	return toString("Rune", n.Row, n.Col, n.Value)
 }

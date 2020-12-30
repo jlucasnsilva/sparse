@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"errors"
-	"fmt"
 	"unicode"
 
 	"github.com/jlucasnsilva/sparse"
@@ -39,7 +38,10 @@ func parseBlank(value string) (sparse.Node, error) {
 	if len(value) < 1 {
 		return nil, errors.New("not white space")
 	}
-	return &Blank{Value: len(value)}, nil
+	result := &Blank{
+		Value: len(value),
+	}
+	return result, nil
 }
 
 func isBlank(r rune) bool {
@@ -67,9 +69,9 @@ func (n *Blank) Position() (int, int) {
 	return n.Row, n.Col
 }
 
-// ValueString ...
-func (n *Blank) ValueString() string {
-	return fmt.Sprintf("[blank:%v]", n.Value)
+// String ...
+func (n *Blank) String() string {
+	return toString("Blank", n.Row, n.Col, n.Value)
 }
 
 // ParseNewline ...
@@ -105,9 +107,9 @@ func (n *Newline) Position() (int, int) {
 	return n.Row, n.Col
 }
 
-// ValueString ...
-func (n *Newline) ValueString() string {
-	return "\\n"
+// String ...
+func (n *Newline) String() string {
+	return toString("Newline", n.Row, n.Col, "\\n")
 }
 
 // ParseSpace ...
@@ -143,7 +145,7 @@ func (n *Space) Position() (int, int) {
 	return n.Row, n.Col
 }
 
-// ValueString ...
-func (n *Space) ValueString() string {
-	return "\\n"
+// String ...
+func (n *Space) String() string {
+	return toString("Space", n.Row, n.Col, n.Value)
 }

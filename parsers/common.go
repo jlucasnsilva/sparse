@@ -1,6 +1,9 @@
 package parsers
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/jlucasnsilva/sparse"
 )
 
@@ -38,4 +41,15 @@ func parseValueWithWhile(s sparse.Scanner, pred func(rune) bool, parse stringPar
 		return next, nil, err
 	}
 	return next, node, nil
+}
+
+func toString(nodeType string, row, col int, value interface{}, pairs []interface{}) string {
+	b := strings.Builder{}
+	for i := 0; i < len(pairs)-1; i += 2 {
+		fmt.Fprintf(&b, ", %v: %v", pairs[i], pairs[i+1])
+	}
+	return fmt.Sprintf(
+		"%v{ Row: %v, Col: %v, Value «%v»%v }",
+		nodeType, row, col, value, b.String(),
+	)
 }

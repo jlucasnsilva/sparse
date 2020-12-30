@@ -1,5 +1,7 @@
 package sparse
 
+import "fmt"
+
 type (
 	// ParserFunc ...
 	ParserFunc func(s Scanner) (next Scanner, node Node, err error)
@@ -14,23 +16,10 @@ type (
 
 	// Node ...
 	Node interface {
+		fmt.Stringer
 		Position() (int, int)
-		ValueString() string
 		Equals(Node) bool
 		Child(int) Node
 		Children() int
 	}
-
-	// StateMachine ...
-	StateMachine interface {
-		Check(r rune) bool
-	}
-
-	// StateMachineFunc ...
-	StateMachineFunc func(r rune) bool
 )
-
-// Check ...
-func (f StateMachineFunc) Check(r rune) bool {
-	return f(r)
-}

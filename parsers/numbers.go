@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
@@ -96,9 +95,9 @@ func (n *Float) Children() int {
 	panic("Nodes of type 'Float' don't have children")
 }
 
-// ValueString ...
-func (n *Float) ValueString() string {
-	return fmt.Sprint(n.Value)
+// String ...
+func (n *Float) String() string {
+	return toString("Float", n.Row, n.Col, n.Value)
 }
 
 // Position ...
@@ -122,7 +121,7 @@ func (n *Int) Children() int {
 	panic("Nodes of type 'Int' don't have children")
 }
 
-// ValueString ...
-func (n *Int) ValueString() string {
-	return fmt.Sprint(n.Value)
+// String ...
+func (n *Int) String() string {
+	return toString("Int", n.Row, n.Col, n.Value)
 }

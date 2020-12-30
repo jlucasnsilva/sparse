@@ -29,6 +29,7 @@ func (p *StringParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, err
 	}
 
 	var str string
+	row, col := s.Position()
 	parseFirst := ParseThisRune(p.Bracket)
 	r, _, err := parseFirst(s)
 	if err != nil {
@@ -44,7 +45,13 @@ func (p *StringParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, err
 	if err != nil {
 		return r, nil, err
 	}
-	return s, &String{Value: str, Bracket: p.Bracket}, nil
+	result := &String{
+		Col:     col,
+		Row:     row,
+		Value:   str,
+		Bracket: p.Bracket,
+	}
+	return s, result, nil
 }
 
 func (p *StringParser) check(r rune) bool {
@@ -96,7 +103,8 @@ func (n *String) Position() (int, int) {
 	return n.Row, n.Col
 }
 
-// ValueString ...
-func (n *String) ValueString() string {
-	return fmt.Sprintf("%c%v%c", n.Bracket, n.Value, n.Bracket)
+// String ...
+func (n *String) String() string {
+	b := fmt.Sprintf("'%v'", n.Bracket)
+	return toString("String", n.Row, n.Col, n.Value, "Bracket", b)
 }
