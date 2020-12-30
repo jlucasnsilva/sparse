@@ -5,26 +5,6 @@ import (
 	"fmt"
 )
 
-// And ...
-func And(parsers ...ParserFunc) ExprParserFunc {
-	return func(s Scanner) (Scanner, []Node, error) {
-		var (
-			nodes = make([]Node, 0, 10)
-			node  Node
-			err   error
-			r     = s
-		)
-		for i, p := range parsers {
-			r, node, err = p(r)
-			if err != nil {
-				return s, nil, fmt.Errorf("invalid parser at %v: %v", i, err)
-			}
-			nodes = append(nodes, node)
-		}
-		return r, nodes, nil
-	}
-}
-
 // Or ...
 func Or(parsers ...ParserFunc) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
@@ -37,30 +17,49 @@ func Or(parsers ...ParserFunc) ParserFunc {
 	}
 }
 
-// Some ...
-func Some(target ParserFunc, separator ParserFunc) ExprParserFunc {
-	return func(s Scanner) (Scanner, []Node, error) {
+// And ...
+func And(b NodeBuilder, parsers ...ParserFunc) ParserFunc {
+	return func(s Scanner) (Scanner, Node, error) {
 		var (
-			nodes = make([]Node, 0, 10)
-			node  Node
-			err   error
-			r     = s
-			t     = r
+			node Node
+			err  error
+			r    = s
+		)
+		for i, p := range parsers {
+			r, node, err = p(r)
+			if err != nil {
+				b.Reset()
+				return s, nil, fmt.Errorf("invalid parser at %v: %v", i, err)
+			}
+			b.Add(node)
+		}
+		return r, b.Build(), nil
+	}
+}
+
+// Some ...
+func Some(b NodeBuilder, target ParserFunc, separator ParserFunc) ParserFunc {
+	return func(s Scanner) (Scanner, Node, error) {
+		var (
+			node Node
+			err  error
+			r    = s
+			t    = r
 		)
 
 		if r, node, err = target(r); err != nil {
 			return s, nil, errors.New("not a single match")
 		}
-		nodes = append(nodes, node)
+		b.Add(node)
 
 		for true {
 			if t, node, err = target(r); err != nil {
-				return r, nodes, nil
+				return r, b.Build(), nil
 			}
 			if t, node, err = target(t); err != nil {
 				return r, nil, errors.New("expression ended on a separator")
 			}
-			nodes = append(nodes, node)
+			b.Add(node)
 			r = t
 		}
 		return s, nil, nil
