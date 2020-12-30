@@ -15,53 +15,64 @@ type (
 		Value   string
 	}
 
-	stringStateMachine struct {
-		bracket rune
+	// StringParser ...
+	StringParser struct {
+		Bracket rune
 		scape   bool
 	}
 )
 
-// ParseOneString ...
-func ParseOneString(bracket rune) sparse.ParserFunc {
-	sm := stringStateMachine{bracket: bracket}
-	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-		var str string
-
-		parseFirst := ParseThisRune(bracket)
-		r, _, err := parseFirst(s)
-		if err != nil {
-			return r, nil, err
-		}
-
-		str, r = r.ConsumeWhile(sm.Check)
-		if err := r.Err(); err != nil {
-			return r, nil, err
-		}
-
-		r, _, err = parseFirst(r)
-		if err != nil {
-			return r, nil, err
-		}
-		return s, &String{Value: str, Bracket: bracket}, nil
+// Parse ...
+func (p *StringParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	if p.Bracket == 0 {
+		p.Bracket = '"'
 	}
+
+	var str string
+	parseFirst := ParseThisRune(p.Bracket)
+	r, _, err := parseFirst(s)
+	if err != nil {
+		return r, nil, err
+	}
+
+	str, r = r.ConsumeWhile(p.check)
+	if err := r.Err(); err != nil {
+		return r, nil, err
+	}
+
+	r, _, err = parseFirst(r)
+	if err != nil {
+		return r, nil, err
+	}
+	return s, &String{Value: str, Bracket: p.Bracket}, nil
+}
+
+func (p *StringParser) check(r rune) bool {
+	res := r != p.Bracket || p.scape
+	if r == '\\' {
+		p.scape = true
+	} else {
+		p.scape = false
+	}
+	return res
 }
 
 // ParseSingleQuoteString ...
 func ParseSingleQuoteString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	p := ParseOneString('\'')
-	return p(s)
+	p := StringParser{Bracket: '\''}
+	return p.Parse(s)
 }
 
 // ParseDoubleQuoteString ...
 func ParseDoubleQuoteString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	p := ParseOneString('"')
-	return p(s)
+	p := StringParser{Bracket: '"'}
+	return p.Parse(s)
 }
 
 // ParseBackTickString ...
 func ParseBackTickString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	p := ParseOneString('`')
-	return p(s)
+	p := StringParser{Bracket: '`'}
+	return p.Parse(s)
 }
 
 // Equals ...
@@ -88,15 +99,4 @@ func (n *String) Position() (int, int) {
 // ValueString ...
 func (n *String) ValueString() string {
 	return fmt.Sprintf("%c%v%c", n.Bracket, n.Value, n.Bracket)
-}
-
-// Check ...
-func (sm *stringStateMachine) Check(r rune) bool {
-	res := r != sm.bracket || sm.scape
-	if r == '\\' {
-		sm.scape = true
-	} else {
-		sm.scape = false
-	}
-	return res
 }

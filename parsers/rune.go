@@ -17,10 +17,11 @@ type (
 
 // ParseRune ...
 func ParseRune(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	parse := func(r rune) (sparse.Node, error) {
-		return &Rune{Value: r}, nil
-	}
-	return parseValue(s, parse)
+	return parseValue(s, createRune)
+}
+
+func createRune(r rune) (sparse.Node, error) {
+	return &Rune{Value: r}, nil
 }
 
 // ParseThisRune ...
@@ -31,7 +32,7 @@ func ParseThisRune(r rune) sparse.ParserFunc {
 	err := func(t rune) error {
 		return fmt.Errorf("expected '%c'. Got '%c' instead", r, t)
 	}
-	return parseRune(pred, err)
+	return parseOneRune(pred, err)
 }
 
 // ParseOneRune ...
@@ -39,10 +40,10 @@ func ParseOneRune(pred func(r rune) bool) sparse.ParserFunc {
 	err := func(t rune) error {
 		return fmt.Errorf("Invalid character '%c'", t)
 	}
-	return parseRune(pred, err)
+	return parseOneRune(pred, err)
 }
 
-func parseRune(pred func(r rune) bool, err func(rune) error) sparse.ParserFunc {
+func parseOneRune(pred func(r rune) bool, err func(rune) error) sparse.ParserFunc {
 	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 		parse := func(t rune) (sparse.Node, error) {
 			if pred(t) {

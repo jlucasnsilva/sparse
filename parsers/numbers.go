@@ -25,16 +25,26 @@ type (
 		Value uint64
 	}
 
-	numberStateMachine struct {
+	// NumberParser ...
+	NumberParser struct {
 		foundDot bool
 		isFloat  bool
 	}
 )
 
-// ParseNumber ...
-func ParseNumber(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	sm := &numberStateMachine{}
-	return parseValueWithWhile(s, sm.Check, parseNumber)
+// Parse ...
+func (p *NumberParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return parseValueWithWhile(s, p.check, parseNumber)
+}
+
+func (p *NumberParser) check(r rune) bool {
+	if p.foundDot {
+		p.isFloat = true
+	}
+	if r == '.' {
+		p.foundDot = true
+	}
+	return unicode.IsDigit(r) || r == '.' && !p.isFloat
 }
 
 func parseNumber(value string) (sparse.Node, error) {
@@ -115,15 +125,4 @@ func (n *Int) Children() int {
 // ValueString ...
 func (n *Int) ValueString() string {
 	return fmt.Sprint(n.Value)
-}
-
-// Check ...
-func (sm *numberStateMachine) Check(r rune) bool {
-	if sm.foundDot {
-		sm.isFloat = true
-	}
-	if r == '.' {
-		sm.foundDot = true
-	}
-	return unicode.IsDigit(r) || r == '.' && !sm.isFloat
 }

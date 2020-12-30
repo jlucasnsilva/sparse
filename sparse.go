@@ -4,6 +4,11 @@ type (
 	// ParserFunc ...
 	ParserFunc func(s Scanner) (next Scanner, node Node, err error)
 
+	// Parser ...
+	Parser interface {
+		Parse(s Scanner) (next Scanner, node Node, err error)
+	}
+
 	// ExprParserFunc ...
 	ExprParserFunc func(s Scanner) (next Scanner, nodes []Node, err error)
 

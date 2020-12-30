@@ -15,21 +15,38 @@ type (
 		Value string
 	}
 
-	wordStateMachine struct {
+	// WordParser ...
+	WordParser struct {
 		count int
 	}
 )
 
-// ParseWord ...
-func ParseWord(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	sm := &wordStateMachine{}
-	parse := func(value string) (sparse.Node, error) {
-		if len(value) < 1 {
-			return nil, errors.New("Not an Word")
-		}
-		return &Word{Value: value}, nil
+// Parse ...
+func (p *WordParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return parseValueWithWhile(s, p.check, parseWord)
+}
+
+func (p *WordParser) check(r rune) bool {
+	if p.count == 0 {
+		p.count++
+		return isWordFirst(r)
 	}
-	return parseValueWithWhile(s, sm.Check, parse)
+	return isWord(r)
+}
+
+func parseWord(value string) (sparse.Node, error) {
+	if len(value) < 1 {
+		return nil, errors.New("not an word")
+	}
+	return &Word{Value: value}, nil
+}
+
+func isWordFirst(r rune) bool {
+	return unicode.IsLetter(r) || r == '_'
+}
+
+func isWord(r rune) bool {
+	return isWordFirst(r) || unicode.IsDigit(r)
 }
 
 // Position ...
@@ -56,21 +73,4 @@ func (n *Word) Children() int {
 // ValueString ...
 func (n *Word) ValueString() string {
 	return n.Value
-}
-
-// Check ...
-func (sm *wordStateMachine) Check(r rune) bool {
-	if sm.count == 0 {
-		sm.count++
-		return isWordFirst(r)
-	}
-	return isWord(r)
-}
-
-func isWordFirst(r rune) bool {
-	return unicode.IsLetter(r) || r == '_'
-}
-
-func isWord(r rune) bool {
-	return isWordFirst(r) || unicode.IsDigit(r)
 }
