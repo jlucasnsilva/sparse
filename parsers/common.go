@@ -13,7 +13,7 @@ type (
 	stringParserFunc func(string, int, int) (sparse.Node, error)
 )
 
-func parseValue(s sparse.Scanner, parse runeParserFunc) (sparse.Scanner, sparse.Node, error) {
+func parseValue(s sparse.Scanner, createNode runeParserFunc) (sparse.Scanner, sparse.Node, error) {
 	if err := s.Err(); err != nil {
 		return s, nil, err
 	}
@@ -22,7 +22,7 @@ func parseValue(s sparse.Scanner, parse runeParserFunc) (sparse.Scanner, sparse.
 		return next, nil, err
 	}
 	row, col := s.Position()
-	node, err := parse(r, row, col)
+	node, err := createNode(r, row, col)
 	if err != nil {
 		return next, nil, err
 	}

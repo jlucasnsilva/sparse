@@ -55,25 +55,6 @@ func parseOneRune(pred func(r rune) bool, err func(rune) error) sparse.ParserFun
 	}
 }
 
-// ParseChar ...
-func ParseChar(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	var node sparse.Node
-	singleQuoteParser := ParseThisRune('\'')
-	r, _, err := singleQuoteParser(s)
-	if err != nil {
-		return r, nil, err
-	}
-	r, node, err = ParseRune(r)
-	if err != nil {
-		return r, nil, err
-	}
-	r, _, err = singleQuoteParser(r)
-	if err != nil {
-		return r, nil, err
-	}
-	return r, node, nil
-}
-
 // Position ...
 func (n *Rune) Position() (int, int) {
 	return n.Row, n.Col
