@@ -33,7 +33,7 @@ type (
 
 // Parse ...
 func (p *NumberParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return parseValueWithWhile(s, p.check, parseNumber)
+	return parseValueWithWhile(s, p.check, createNumber)
 }
 
 func (p *NumberParser) check(r rune) bool {
@@ -46,7 +46,7 @@ func (p *NumberParser) check(r rune) bool {
 	return unicode.IsDigit(r) || r == '.' && !p.isFloat
 }
 
-func parseNumber(value string) (sparse.Node, error) {
+func createNumber(value string, row, col int) (sparse.Node, error) {
 	isFloat := func(s string) bool {
 		return strings.ContainsRune(s, '.')
 	}
@@ -60,11 +60,11 @@ func parseNumber(value string) (sparse.Node, error) {
 		err  error
 	)
 	if isFloat(value) {
-		fnode := &Float{}
+		fnode := &Float{Row: row, Col: col}
 		fnode.Value, err = strconv.ParseFloat(value, 64)
 		node = fnode
 	} else {
-		inode := &Int{}
+		inode := &Int{Row: row, Col: col}
 		inode.Value, err = strconv.ParseUint(value, 10, 64)
 		node = inode
 	}

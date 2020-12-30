@@ -8,9 +8,9 @@ import (
 )
 
 type (
-	runeParserFunc func(rune) (sparse.Node, error)
+	runeParserFunc func(rune, int, int) (sparse.Node, error)
 
-	stringParserFunc func(string) (sparse.Node, error)
+	stringParserFunc func(string, int, int) (sparse.Node, error)
 )
 
 func parseValue(s sparse.Scanner, parse runeParserFunc) (sparse.Scanner, sparse.Node, error) {
@@ -21,7 +21,8 @@ func parseValue(s sparse.Scanner, parse runeParserFunc) (sparse.Scanner, sparse.
 	if err := next.Err(); err != nil {
 		return next, nil, err
 	}
-	node, err := parse(r)
+	row, col := s.Position()
+	node, err := parse(r, row, col)
 	if err != nil {
 		return next, nil, err
 	}
@@ -36,14 +37,15 @@ func parseValueWithWhile(s sparse.Scanner, pred func(rune) bool, parse stringPar
 	if err := next.Err(); err != nil {
 		return next, nil, err
 	}
-	node, err := parse(value)
+	row, col := s.Position()
+	node, err := parse(value, row, col)
 	if err != nil {
 		return next, nil, err
 	}
 	return next, node, nil
 }
 
-func toString(nodeType string, row, col int, value interface{}, pairs []interface{}) string {
+func toString(nodeType string, row, col int, value interface{}, pairs ...interface{}) string {
 	b := strings.Builder{}
 	for i := 0; i < len(pairs)-1; i += 2 {
 		fmt.Fprintf(&b, ", %v: %v", pairs[i], pairs[i+1])

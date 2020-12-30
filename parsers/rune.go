@@ -20,8 +20,8 @@ func ParseRune(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 	return parseValue(s, createRune)
 }
 
-func createRune(r rune) (sparse.Node, error) {
-	return &Rune{Value: r}, nil
+func createRune(r rune, row, col int) (sparse.Node, error) {
+	return &Rune{Value: r, Row: row, Col: col}, nil
 }
 
 // ParseThisRune ...
@@ -45,13 +45,13 @@ func ParseOneRune(pred func(r rune) bool) sparse.ParserFunc {
 
 func parseOneRune(pred func(r rune) bool, err func(rune) error) sparse.ParserFunc {
 	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-		parse := func(t rune) (sparse.Node, error) {
+		createRune := func(t rune, row, col int) (sparse.Node, error) {
 			if pred(t) {
-				return &Rune{Value: t}, nil
+				return &Rune{Value: t, Row: row, Col: col}, nil
 			}
 			return nil, err(t)
 		}
-		return parseValue(s, parse)
+		return parseValue(s, createRune)
 	}
 }
 

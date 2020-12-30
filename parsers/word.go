@@ -23,7 +23,7 @@ type (
 
 // Parse ...
 func (p *WordParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return parseValueWithWhile(s, p.check, parseWord)
+	return parseValueWithWhile(s, p.check, createWord)
 }
 
 func (p *WordParser) check(r rune) bool {
@@ -34,11 +34,11 @@ func (p *WordParser) check(r rune) bool {
 	return isWord(r)
 }
 
-func parseWord(value string) (sparse.Node, error) {
+func createWord(value string, row, col int) (sparse.Node, error) {
 	if len(value) < 1 {
 		return nil, errors.New("not an word")
 	}
-	return &Word{Value: value}, nil
+	return &Word{Value: value, Row: row, Col: col}, nil
 }
 
 func isWordFirst(r rune) bool {
@@ -70,7 +70,7 @@ func (n *Word) Children() int {
 	panic("Nodes of type 'Word' don't have children")
 }
 
-// ValueString ...
-func (n *Word) ValueString() string {
-	return n.Value
+// String ...
+func (n *Word) String() string {
+	return toString("Word", n.Row, n.Col, n.Value)
 }
