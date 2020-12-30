@@ -31,17 +31,33 @@ type (
 
 // ParseBlank ...
 func ParseBlank(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return parseValueWithWhile(s, isBlank, parseBlank)
+	return parseValueWithWhile(s, isBlank, createSpace)
 }
 
-func parseBlank(value string, row, col int) (sparse.Node, error) {
+func createSpace(value string, row, col int) (sparse.Node, error) {
+	return createSpaceNode(value, row, col, false)
+}
+
+// DismissBlank ...
+func DismissBlank(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return parseValueWithWhile(s, isBlank, dismissSpace)
+}
+
+func dismissSpace(value string, row, col int) (sparse.Node, error) {
+	return createSpaceNode(value, row, col, true)
+}
+
+func createSpaceNode(value string, row, col int, dismiss bool) (sparse.Node, error) {
+	var result *Blank
 	if len(value) < 1 {
 		return nil, errors.New("not white space")
 	}
-	result := &Blank{
-		Value: len(value),
-		Row:   row,
-		Col:   col,
+	if !dismiss {
+		result = &Blank{
+			Value: len(value),
+			Row:   row,
+			Col:   col,
+		}
 	}
 	return result, nil
 }
@@ -78,14 +94,23 @@ func (n *Blank) String() string {
 
 // ParseNewline ...
 func ParseNewline(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return parseValue(s, parseNewline)
+	return parseValue(s, createNewline)
 }
 
-func parseNewline(r rune, row, col int) (sparse.Node, error) {
+func createNewline(r rune, row, col int) (sparse.Node, error) {
 	if r != '\n' {
 		return nil, errors.New("Not a newline")
 	}
 	return &Newline{Row: row, Col: col}, nil
+}
+
+// DismissNewline ...
+func DismissNewline(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return parseValueWithWhile(s, isNewline, dismissSpace)
+}
+
+func isNewline(r rune) bool {
+	return r == '\n'
 }
 
 // Equals ...
@@ -117,6 +142,11 @@ func (n *Newline) String() string {
 // ParseSpace ...
 func ParseSpace(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 	return parseValueWithWhile(s, unicode.IsSpace, parseSpace)
+}
+
+// DismissSpace ...
+func DismissSpace(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return parseValueWithWhile(s, isBlank, dismissSpace)
 }
 
 func parseSpace(value string, row, col int) (sparse.Node, error) {
