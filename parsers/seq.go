@@ -7,16 +7,16 @@ import (
 )
 
 type (
-	// Sequence ...
-	Sequence struct {
+	// SequenceNode ...
+	SequenceNode struct {
 		Row   int
 		Col   int
 		Value string
 	}
 )
 
-// ParseSequence ...
-func ParseSequence(sequence string) sparse.ParserFunc {
+// Sequence ...
+func Sequence(sequence string) sparse.ParserFunc {
 	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 		var (
 			seq = []rune(sequence)
@@ -33,7 +33,7 @@ func ParseSequence(sequence string) sparse.ParserFunc {
 		}
 
 		row, col := s.Position()
-		result := &Sequence{
+		result := &SequenceNode{
 			Row:   row,
 			Col:   col,
 			Value: sequence,
@@ -43,27 +43,27 @@ func ParseSequence(sequence string) sparse.ParserFunc {
 }
 
 // Position ...
-func (n *Sequence) Position() (int, int) {
+func (n *SequenceNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // Equals ...
-func (n *Sequence) Equals(m sparse.Node) bool {
-	v, ok := m.(*Sequence)
+func (n *SequenceNode) Equals(m sparse.Node) bool {
+	v, ok := m.(*SequenceNode)
 	return ok && v.Value == n.Value
 }
 
 // Child ...
-func (n *Sequence) Child(i int) sparse.Node {
-	panic("Nodes of type 'Sequence' don't have children")
+func (n *SequenceNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'SequenceNode' don't have children")
 }
 
 // Children ...
-func (n *Sequence) Children() int {
-	panic("Nodes of type 'Sequence' don't have children")
+func (n *SequenceNode) Children() int {
+	panic("Nodes of type 'SequenceNode' don't have children")
 }
 
 // String ...
-func (n *Sequence) String() string {
-	return toString("Sequence", n.Row, n.Col, n.Value)
+func (n *SequenceNode) String() string {
+	return toString("SequenceNode", n.Row, n.Col, n.Value)
 }

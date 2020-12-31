@@ -3,6 +3,7 @@ package sparse
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 )
 
@@ -100,4 +101,12 @@ func (s Scanner) ConsumeWhile(pred func(rune) bool) (string, Scanner) {
 		}
 	}
 	return string(s.text[start:s.pos]), s
+}
+
+// String ...
+func (s Scanner) String() string {
+	return fmt.Sprintf(
+		"text: %v, pos: %v (L%v, C%v), err = %v",
+		string(s.text), s.pos, s.row, s.col, s.err,
+	)
 }

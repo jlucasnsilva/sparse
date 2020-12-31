@@ -10,40 +10,35 @@ import (
 )
 
 type (
-	// Float ...
-	Float struct {
+	// FloatNode ...
+	FloatNode struct {
 		Row   int
 		Col   int
 		Value float64
 	}
 
-	// Int ...
-	Int struct {
+	// IntNode ...
+	IntNode struct {
 		Row   int
 		Col   int
 		Value uint64
 	}
-
-	// NumberParser ...
-	NumberParser struct {
-		foundDot bool
-		isFloat  bool
-	}
 )
 
-// Parse ...
-func (p *NumberParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return parseValueWithWhile(s, p.check, createNumber)
-}
-
-func (p *NumberParser) check(r rune) bool {
-	if p.foundDot {
-		p.isFloat = true
+// Number ...
+func Number(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	isFloat := false
+	foundDot := false
+	check := func(r rune) bool {
+		if foundDot {
+			isFloat = true
+		}
+		if r == '.' {
+			foundDot = true
+		}
+		return unicode.IsDigit(r) || r == '.' && !isFloat
 	}
-	if r == '.' {
-		p.foundDot = true
-	}
-	return unicode.IsDigit(r) || r == '.' && !p.isFloat
+	return parseValueWithWhile(s, check, createNumber)
 }
 
 func createNumber(value string, row, col int) (sparse.Node, error) {
@@ -60,11 +55,11 @@ func createNumber(value string, row, col int) (sparse.Node, error) {
 		err  error
 	)
 	if isFloat(value) {
-		fnode := &Float{Row: row, Col: col}
+		fnode := &FloatNode{Row: row, Col: col}
 		fnode.Value, err = strconv.ParseFloat(value, 64)
 		node = fnode
 	} else {
-		inode := &Int{Row: row, Col: col}
+		inode := &IntNode{Row: row, Col: col}
 		inode.Value, err = strconv.ParseUint(value, 10, 64)
 		node = inode
 	}
@@ -75,53 +70,53 @@ func createNumber(value string, row, col int) (sparse.Node, error) {
 }
 
 // Position ...
-func (n *Float) Position() (int, int) {
+func (n *FloatNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // Equals ...
-func (n *Float) Equals(m sparse.Node) bool {
-	v, ok := m.(*Float)
+func (n *FloatNode) Equals(m sparse.Node) bool {
+	v, ok := m.(*FloatNode)
 	return ok && v.Value == n.Value
 }
 
 // Child ...
-func (n *Float) Child(i int) sparse.Node {
-	panic("Nodes of type 'Float' don't have children")
+func (n *FloatNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'FloatNode' don't have children")
 }
 
 // Children ...
-func (n *Float) Children() int {
-	panic("Nodes of type 'Float' don't have children")
+func (n *FloatNode) Children() int {
+	panic("Nodes of type 'FloatNode' don't have children")
 }
 
 // String ...
-func (n *Float) String() string {
-	return toString("Float", n.Row, n.Col, n.Value)
+func (n *FloatNode) String() string {
+	return toString("FloatNode", n.Row, n.Col, n.Value)
 }
 
 // Position ...
-func (n *Int) Position() (int, int) {
+func (n *IntNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // Equals ...
-func (n *Int) Equals(m sparse.Node) bool {
-	v, ok := m.(*Int)
+func (n *IntNode) Equals(m sparse.Node) bool {
+	v, ok := m.(*IntNode)
 	return ok && v.Value == n.Value
 }
 
 // Child ...
-func (n *Int) Child(i int) sparse.Node {
-	panic("Nodes of type 'Int' don't have children")
+func (n *IntNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'IntNode' don't have children")
 }
 
 // Children ...
-func (n *Int) Children() int {
-	panic("Nodes of type 'Int' don't have children")
+func (n *IntNode) Children() int {
+	panic("Nodes of type 'IntNode' don't have children")
 }
 
 // String ...
-func (n *Int) String() string {
-	return toString("Int", n.Row, n.Col, n.Value)
+func (n *IntNode) String() string {
+	return toString("IntNode", n.Row, n.Col, n.Value)
 }

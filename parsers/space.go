@@ -8,29 +8,29 @@ import (
 )
 
 type (
-	// Blank ...
-	Blank struct {
+	// BlankNode ...
+	BlankNode struct {
 		Row   int
 		Col   int
 		Value int // length
 	}
 
-	// Newline ...
-	Newline struct {
+	// NewlineNode ...
+	NewlineNode struct {
 		Row int
 		Col int
 	}
 
-	// Space ...
-	Space struct {
+	// SpaceNode ...
+	SpaceNode struct {
 		Row   int
 		Col   int
 		Value int // length
 	}
 )
 
-// ParseBlank ...
-func ParseBlank(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+// Blank ...
+func Blank(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 	return parseValueWithWhile(s, isBlank, createSpace)
 }
 
@@ -48,12 +48,12 @@ func dismissSpace(value string, row, col int) (sparse.Node, error) {
 }
 
 func createSpaceNode(value string, row, col int, dismiss bool) (sparse.Node, error) {
-	var result *Blank
+	var result *BlankNode
 	if len(value) < 1 {
 		return nil, errors.New("not white space")
 	}
 	if !dismiss {
-		result = &Blank{
+		result = &BlankNode{
 			Value: len(value),
 			Row:   row,
 			Col:   col,
@@ -67,33 +67,33 @@ func isBlank(r rune) bool {
 }
 
 // Equals ...
-func (n *Blank) Equals(m sparse.Node) bool {
-	v, ok := m.(*Blank)
+func (n *BlankNode) Equals(m sparse.Node) bool {
+	v, ok := m.(*BlankNode)
 	return ok && v.Value == n.Value
 }
 
 // Child ...
-func (n *Blank) Child(i int) sparse.Node {
-	panic("Nodes of type 'Blank' don't have children")
+func (n *BlankNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'BlankNode' don't have children")
 }
 
 // Children ...
-func (n *Blank) Children() int {
-	panic("Nodes of type 'Blank' don't have children")
+func (n *BlankNode) Children() int {
+	panic("Nodes of type 'BlankNode' don't have children")
 }
 
 // Position ...
-func (n *Blank) Position() (int, int) {
+func (n *BlankNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // String ...
-func (n *Blank) String() string {
-	return toString("Blank", n.Row, n.Col, n.Value)
+func (n *BlankNode) String() string {
+	return toString("BlankNode", n.Row, n.Col, n.Value)
 }
 
-// ParseNewline ...
-func ParseNewline(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+// Newline ...
+func Newline(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 	return parseValue(s, createNewline)
 }
 
@@ -101,7 +101,7 @@ func createNewline(r rune, row, col int) (sparse.Node, error) {
 	if r != '\n' {
 		return nil, errors.New("Not a newline")
 	}
-	return &Newline{Row: row, Col: col}, nil
+	return &NewlineNode{Row: row, Col: col}, nil
 }
 
 // DismissNewline ...
@@ -114,33 +114,33 @@ func isNewline(r rune) bool {
 }
 
 // Equals ...
-func (n *Newline) Equals(m sparse.Node) bool {
-	_, ok := m.(*Newline)
+func (n *NewlineNode) Equals(m sparse.Node) bool {
+	_, ok := m.(*NewlineNode)
 	return ok
 }
 
 // Child ...
-func (n *Newline) Child(i int) sparse.Node {
-	panic("Nodes of type 'Newline' don't have children")
+func (n *NewlineNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'NewlineNode' don't have children")
 }
 
 // Children ...
-func (n *Newline) Children() int {
-	panic("Nodes of type 'Newline' don't have children")
+func (n *NewlineNode) Children() int {
+	panic("Nodes of type 'NewlineNode' don't have children")
 }
 
 // Position ...
-func (n *Newline) Position() (int, int) {
+func (n *NewlineNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // String ...
-func (n *Newline) String() string {
-	return toString("Newline", n.Row, n.Col, "\\n")
+func (n *NewlineNode) String() string {
+	return toString("NewlineNode", n.Row, n.Col, "\\n")
 }
 
-// ParseSpace ...
-func ParseSpace(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+// Space ...
+func Space(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 	return parseValueWithWhile(s, unicode.IsSpace, parseSpace)
 }
 
@@ -153,7 +153,7 @@ func parseSpace(value string, row, col int) (sparse.Node, error) {
 	if len(value) < 1 {
 		return nil, errors.New("not white space")
 	}
-	result := &Space{
+	result := &SpaceNode{
 		Value: len(value),
 		Row:   row,
 		Col:   col,
@@ -162,27 +162,27 @@ func parseSpace(value string, row, col int) (sparse.Node, error) {
 }
 
 // Equals ...
-func (n *Space) Equals(m sparse.Node) bool {
-	_, ok := m.(*Space)
+func (n *SpaceNode) Equals(m sparse.Node) bool {
+	_, ok := m.(*SpaceNode)
 	return ok
 }
 
 // Child ...
-func (n *Space) Child(i int) sparse.Node {
-	panic("Nodes of type 'Newline' don't have children")
+func (n *SpaceNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'NewlineNode' don't have children")
 }
 
 // Children ...
-func (n *Space) Children() int {
-	panic("Nodes of type 'Newline' don't have children")
+func (n *SpaceNode) Children() int {
+	panic("Nodes of type 'NewlineNode' don't have children")
 }
 
 // Position ...
-func (n *Space) Position() (int, int) {
+func (n *SpaceNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // String ...
-func (n *Space) String() string {
-	return toString("Space", n.Row, n.Col, n.Value)
+func (n *SpaceNode) String() string {
+	return toString("SpaceNode", n.Row, n.Col, n.Value)
 }

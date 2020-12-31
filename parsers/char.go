@@ -7,16 +7,16 @@ import (
 )
 
 type (
-	// Char ...
-	Char struct {
+	// CharNode ...
+	CharNode struct {
 		Row   int
 		Col   int
 		Value rune
 	}
 )
 
-// ParseChar ...
-func ParseChar(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+// Char ...
+func Char(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 	var node sparse.Node
 	singleQuoteParser := ParseThisRune('\'')
 	r, _, err := singleQuoteParser(s)
@@ -35,31 +35,31 @@ func ParseChar(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 }
 
 func createChar(r rune, row, col int) (sparse.Node, error) {
-	return &Char{Value: r, Row: row, Col: col}, nil
+	return &CharNode{Value: r, Row: row, Col: col}, nil
 }
 
 // Position ...
-func (n *Char) Position() (int, int) {
+func (n *CharNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // Equals ...
-func (n *Char) Equals(m sparse.Node) bool {
-	v, ok := m.(*Char)
+func (n *CharNode) Equals(m sparse.Node) bool {
+	v, ok := m.(*CharNode)
 	return ok && v.Value == n.Value
 }
 
 // Child ...
-func (n *Char) Child(i int) sparse.Node {
-	panic("Nodes of type 'Char' don't have children")
+func (n *CharNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'CharNode' don't have children")
 }
 
 // Children ...
-func (n *Char) Children() int {
-	panic("Nodes of type 'Char' don't have children")
+func (n *CharNode) Children() int {
+	panic("Nodes of type 'CharNode' don't have children")
 }
 
 // String ...
-func (n *Char) String() string {
-	return toString("Char", n.Row, n.Col, fmt.Sprintf("'%c'", n.Value))
+func (n *CharNode) String() string {
+	return toString("CharNode", n.Row, n.Col, fmt.Sprintf("'%c'", n.Value))
 }

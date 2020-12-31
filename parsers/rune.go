@@ -7,25 +7,25 @@ import (
 )
 
 type (
-	// Rune ...
-	Rune struct {
+	// RuneNode ...
+	RuneNode struct {
 		Row   int
 		Col   int
 		Value rune
 	}
 )
 
-// ParseRune ...
-func ParseRune(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+// Rune ...
+func Rune(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 	return parseValue(s, createRune)
 }
 
 func createRune(r rune, row, col int) (sparse.Node, error) {
-	return &Rune{Value: r, Row: row, Col: col}, nil
+	return &RuneNode{Value: r, Row: row, Col: col}, nil
 }
 
-// ParseThisRune ...
-func ParseThisRune(r rune) sparse.ParserFunc {
+// ThisRune ...
+func ThisRune(r rune) sparse.ParserFunc {
 	pred := func(t rune) bool {
 		return t == r
 	}
@@ -35,8 +35,8 @@ func ParseThisRune(r rune) sparse.ParserFunc {
 	return parseOneRune(pred, err)
 }
 
-// ParseOneRune ...
-func ParseOneRune(pred func(r rune) bool) sparse.ParserFunc {
+// OneRune ...
+func OneRune(pred func(r rune) bool) sparse.ParserFunc {
 	err := func(t rune) error {
 		return fmt.Errorf("Invalid character '%c'", t)
 	}
@@ -47,7 +47,7 @@ func parseOneRune(pred func(r rune) bool, err func(rune) error) sparse.ParserFun
 	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 		createRune := func(t rune, row, col int) (sparse.Node, error) {
 			if pred(t) {
-				return &Rune{Value: t, Row: row, Col: col}, nil
+				return &RuneNode{Value: t, Row: row, Col: col}, nil
 			}
 			return nil, err(t)
 		}
@@ -56,27 +56,27 @@ func parseOneRune(pred func(r rune) bool, err func(rune) error) sparse.ParserFun
 }
 
 // Position ...
-func (n *Rune) Position() (int, int) {
+func (n *RuneNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // Equals ...
-func (n *Rune) Equals(m sparse.Node) bool {
-	v, ok := m.(*Rune)
+func (n *RuneNode) Equals(m sparse.Node) bool {
+	v, ok := m.(*RuneNode)
 	return ok && v.Value == n.Value
 }
 
 // Child ...
-func (n *Rune) Child(i int) sparse.Node {
-	panic("Nodes of type 'Rune' don't have children")
+func (n *RuneNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'RuneNode' don't have children")
 }
 
 // Children ...
-func (n *Rune) Children() int {
-	panic("Nodes of type 'Rune' don't have children")
+func (n *RuneNode) Children() int {
+	panic("Nodes of type 'RuneNode' don't have children")
 }
 
 // String ...
-func (n *Rune) String() string {
-	return toString("Rune", n.Row, n.Col, n.Value)
+func (n *RuneNode) String() string {
+	return toString("RuneNode", n.Row, n.Col, n.Value)
 }

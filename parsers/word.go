@@ -8,37 +8,32 @@ import (
 )
 
 type (
-	// Word ...
-	Word struct {
+	// WordNode ...
+	WordNode struct {
 		Row   int
 		Col   int
 		Value string
 	}
-
-	// WordParser ...
-	WordParser struct {
-		count int
-	}
 )
 
-// Parse ...
-func (p *WordParser) Parse(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return parseValueWithWhile(s, p.check, createWord)
-}
-
-func (p *WordParser) check(r rune) bool {
-	if p.count == 0 {
-		p.count++
-		return isWordFirst(r)
+// Word ...
+func Word(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	count := 0
+	check := func(r rune) bool {
+		if count == 0 {
+			count++
+			return isWordFirst(r)
+		}
+		return isWord(r)
 	}
-	return isWord(r)
+	return parseValueWithWhile(s, check, createWord)
 }
 
 func createWord(value string, row, col int) (sparse.Node, error) {
 	if len(value) < 1 {
 		return nil, errors.New("not an word")
 	}
-	return &Word{Value: value, Row: row, Col: col}, nil
+	return &WordNode{Value: value, Row: row, Col: col}, nil
 }
 
 func isWordFirst(r rune) bool {
@@ -50,27 +45,27 @@ func isWord(r rune) bool {
 }
 
 // Position ...
-func (n *Word) Position() (int, int) {
+func (n *WordNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
 // Equals ...
-func (n *Word) Equals(m sparse.Node) bool {
-	v, ok := m.(*Word)
+func (n *WordNode) Equals(m sparse.Node) bool {
+	v, ok := m.(*WordNode)
 	return ok && v.Value == n.Value
 }
 
 // Child ...
-func (n *Word) Child(i int) sparse.Node {
-	panic("Nodes of type 'Word' don't have children")
+func (n *WordNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'WordNode' don't have children")
 }
 
 // Children ...
-func (n *Word) Children() int {
-	panic("Nodes of type 'Word' don't have children")
+func (n *WordNode) Children() int {
+	panic("Nodes of type 'WordNode' don't have children")
 }
 
 // String ...
-func (n *Word) String() string {
-	return toString("Word", n.Row, n.Col, n.Value)
+func (n *WordNode) String() string {
+	return toString("WordNode", n.Row, n.Col, n.Value)
 }

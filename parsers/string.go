@@ -8,8 +8,8 @@ import (
 )
 
 type (
-	// String ...
-	String struct {
+	// StringNode ...
+	StringNode struct {
 		Row     int
 		Col     int
 		Bracket rune
@@ -17,8 +17,8 @@ type (
 	}
 )
 
-// ParseString ...
-func ParseString(bracket rune) sparse.ParserFunc {
+// String ...
+func String(bracket rune) sparse.ParserFunc {
 	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 		var str string
 		row, col := s.Position()
@@ -37,7 +37,7 @@ func ParseString(bracket rune) sparse.ParserFunc {
 		if err != nil {
 			return r, nil, err
 		}
-		result := &String{
+		result := &StringNode{
 			Col:     col,
 			Row:     row,
 			Value:   str,
@@ -72,44 +72,44 @@ func consumeString(s sparse.Scanner, bracket rune) (string, sparse.Scanner) {
 	return b.String(), r
 }
 
-// ParseSingleQuoteString ...
-func ParseSingleQuoteString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return ParseString('\'')(s)
+// SingleQuoteString ...
+func SingleQuoteString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return String('\'')(s)
 }
 
-// ParseDoubleQuoteString ...
-func ParseDoubleQuoteString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return ParseString('"')(s)
+// DoubleQuoteString ...
+func DoubleQuoteString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return String('"')(s)
 }
 
-// ParseBackTickString ...
-func ParseBackTickString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return ParseString('`')(s)
+// BackTickString ...
+func BackTickString(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return String('`')(s)
 }
 
 // Equals ...
-func (n *String) Equals(m sparse.Node) bool {
-	v, ok := m.(*String)
+func (n *StringNode) Equals(m sparse.Node) bool {
+	v, ok := m.(*StringNode)
 	return ok && v.Value == n.Value && v.Bracket == n.Bracket
 }
 
 // Child ...
-func (n *String) Child(i int) sparse.Node {
-	panic("Nodes of type 'String' don't have children")
+func (n *StringNode) Child(i int) sparse.Node {
+	panic("Nodes of type 'StringNode' don't have children")
 }
 
 // Children ...
-func (n *String) Children() int {
-	panic("Nodes of type 'String' don't have children")
+func (n *StringNode) Children() int {
+	panic("Nodes of type 'StringNode' don't have children")
 }
 
 // Position ...
-func (n *String) Position() (int, int) {
+func (n *StringNode) Position() (int, int) {
 	return n.Row, n.Col
 }
 
-// String ...
-func (n *String) String() string {
+// StringNode ...
+func (n *StringNode) String() string {
 	b := fmt.Sprintf("'%c'", n.Bracket)
-	return toString("String", n.Row, n.Col, n.Value, "Bracket", b)
+	return toString("StringNode", n.Row, n.Col, n.Value, "Bracket", b)
 }
