@@ -1,6 +1,10 @@
 package parsers
 
-import "github.com/jlucasnsilva/sparse"
+import (
+	"fmt"
+
+	"github.com/jlucasnsilva/sparse"
+)
 
 type (
 	// Char ...
@@ -57,5 +61,5 @@ func (n *Char) Children() int {
 
 // String ...
 func (n *Char) String() string {
-	return toString("Char", n.Row, n.Col, n.Value)
+	return toString("Char", n.Row, n.Col, fmt.Sprintf("'%c'", n.Value))
 }
