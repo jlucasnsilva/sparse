@@ -17,6 +17,14 @@ func Or(parsers ...ParserFunc) ParserFunc {
 	}
 }
 
+// Switch ...
+func Switch(switcher Switcher) ParserFunc {
+	return func(s Scanner) (Scanner, Node, error) {
+		parser := switcher.Switch(s.First())
+		return parser(s)
+	}
+}
+
 // And ...
 func And(b NodeBuilder, parsers ...ParserFunc) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
@@ -63,14 +71,6 @@ func Some(b NodeBuilder, target ParserFunc, separator ParserFunc) ParserFunc {
 			r = t
 		}
 		return s, nil, nil
-	}
-}
-
-// Switch ...
-func Switch(switcher Switcher) ParserFunc {
-	return func(s Scanner) (Scanner, Node, error) {
-		parser := switcher.Switch(s.First())
-		return parser(s)
 	}
 }
 

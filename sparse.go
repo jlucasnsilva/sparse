@@ -40,6 +40,9 @@ type (
 
 	// SwitcherMap ...
 	SwitcherMap map[rune]Parser
+
+	// SwitcherFuncMap ...
+	SwitcherFuncMap map[rune]ParserFunc
 )
 
 // Switch ...
@@ -73,6 +76,14 @@ func Error(err error) ParserFunc {
 func (m SwitcherMap) Switch(r rune) ParserFunc {
 	if p, ok := m[r]; !ok {
 		return p.Parse
+	}
+	return Error(fmt.Errorf("no matching parser for Switch('%c')", r))
+}
+
+// Switch ...
+func (m SwitcherFuncMap) Switch(r rune) ParserFunc {
+	if p, ok := m[r]; !ok {
+		return p
 	}
 	return Error(fmt.Errorf("no matching parser for Switch('%c')", r))
 }
