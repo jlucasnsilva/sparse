@@ -65,3 +65,30 @@ func Some(b NodeBuilder, target ParserFunc, separator ParserFunc) ParserFunc {
 		return s, nil, nil
 	}
 }
+
+// Switch ...
+func Switch(switcher Switcher) ParserFunc {
+	return func(s Scanner) (Scanner, Node, error) {
+		parser := switcher.Switch(s.First())
+		return parser(s)
+	}
+}
+
+// Concat ...
+func Concat(b NodeBuilder, parsers ...ParserFunc) ParserFunc {
+	return func(s Scanner) (Scanner, Node, error) {
+		var (
+			node Node
+			err  error
+			r    = s
+		)
+		for _, p := range parsers {
+			r, node, err = p(r)
+			if err != nil {
+				return r, b.Build(), err
+			}
+			b.Add(node)
+		}
+		return r, b.Build(), nil
+	}
+}
