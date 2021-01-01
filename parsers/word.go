@@ -31,29 +31,33 @@ func Word(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 }
 
 // ThisWord ...
-func ThisWord(sequence string) sparse.ParserFunc {
-	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-		var (
-			seq = []rune(sequence)
-			err error
-			ch  rune
-			i   = 0
-			r   = s
-		)
+func ThisWord(word string) sparse.ParserFunc {
+	for i, ch := range word {
+		if i == 0 && !isWordFirst(ch) || !isWord(ch) {
+			panic(fmt.Errorf("'%v' is not a word", word))
+		}
+	}
 
-		for i = 0; i < len(seq) && err == nil; i++ {
-			if ch, r = r.Consume(); seq[i] != ch {
-				return s, nil, fmt.Errorf("'%c' is not '%c'", seq[i], ch)
-			}
+	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+		r, wnode, err := Word(s)
+		if err != nil {
+			e := fmt.Errorf("expected the word '%v', but got: %v", word, err)
+			return s, nil, e
+		}
+
+		w := wnode.(*WordNode)
+		if w.Value != word {
+			e := fmt.Errorf("expected the word '%v', found '%v' instead", word, w.Value)
+			return s, nil, e
 		}
 
 		row, col := s.Position()
 		result := &WordNode{
 			Row:   row,
 			Col:   col,
-			Value: sequence,
+			Value: word,
 		}
-		return s, result, nil
+		return r, result, nil
 	}
 }
 
