@@ -2,6 +2,7 @@ package parsers
 
 import (
 	"errors"
+	"fmt"
 	"unicode"
 
 	"github.com/jlucasnsilva/sparse"
@@ -27,6 +28,33 @@ func Word(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 		return isWord(r)
 	}
 	return parseValueWithWhile(s, check, createWord)
+}
+
+// ThisWord ...
+func ThisWord(sequence string) sparse.ParserFunc {
+	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+		var (
+			seq = []rune(sequence)
+			err error
+			ch  rune
+			i   = 0
+			r   = s
+		)
+
+		for i = 0; i < len(seq) && err == nil; i++ {
+			if ch, r = r.Consume(); seq[i] != ch {
+				return s, nil, fmt.Errorf("'%c' is not '%c'", seq[i], ch)
+			}
+		}
+
+		row, col := s.Position()
+		result := &WordNode{
+			Row:   row,
+			Col:   col,
+			Value: sequence,
+		}
+		return s, result, nil
+	}
 }
 
 func createWord(value string, row, col int) (sparse.Node, error) {
