@@ -14,7 +14,7 @@ type (
 // LineComment ...
 func LineComment(start string) sparse.ParserFunc {
 	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-		r, _, err := sparse.Sequence(start)(s)
+		r, _, err := Sequence(start)(s)
 		if err != nil {
 			return s, nil, err
 		}
@@ -33,12 +33,12 @@ func LineComment(start string) sparse.ParserFunc {
 // DismissLineComment ...
 func DismissLineComment(start string) sparse.ParserFunc {
 	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-		r, _, err := sparse.Sequence(start)(s)
+		r, _, err := Sequence(start)(s)
 		if err != nil {
 			return s, nil, err
 		}
 
-		_, r := r.ConsumeWhile(isNotNewline)
+		_, r = r.ConsumeWhile(isNotNewline)
 		return r, nil, nil
 	}
 }

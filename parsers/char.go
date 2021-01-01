@@ -18,7 +18,7 @@ type (
 // Char ...
 func Char(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 	var node sparse.Node
-	singleQuoteParser := ParseThisRune('\'')
+	singleQuoteParser := ThisRune('\'')
 	r, _, err := singleQuoteParser(s)
 	if err != nil {
 		return r, nil, err

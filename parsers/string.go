@@ -22,7 +22,7 @@ func String(bracket rune) sparse.ParserFunc {
 	return func(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 		var str string
 		row, col := s.Position()
-		parseFirst := ParseThisRune(bracket)
+		parseFirst := ThisRune(bracket)
 		r, _, err := parseFirst(s)
 		if err != nil {
 			return r, nil, err
