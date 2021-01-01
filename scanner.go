@@ -18,8 +18,6 @@ type (
 	}
 )
 
-const delimiters = ",.;[](){}\"'`"
-
 // NewScanner ...
 func NewScanner(rdr io.Reader) (Scanner, error) {
 	scn := Scanner{}
