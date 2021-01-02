@@ -16,8 +16,8 @@ type (
 		fmt.Stringer
 		Position() (int, int)
 		Equals(Node) bool
-		Child(int) Node
-		Children() int
+		Child(uint) Node
+		Children() uint
 	}
 
 	// NodeBuilder ...

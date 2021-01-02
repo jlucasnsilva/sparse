@@ -88,12 +88,12 @@ func (n *WordNode) Equals(m sparse.Node) bool {
 }
 
 // Child ...
-func (n *WordNode) Child(i int) sparse.Node {
+func (n *WordNode) Child(i uint) sparse.Node {
 	panic("Nodes of type 'WordNode' don't have children")
 }
 
 // Children ...
-func (n *WordNode) Children() int {
+func (n *WordNode) Children() uint {
 	panic("Nodes of type 'WordNode' don't have children")
 }
 

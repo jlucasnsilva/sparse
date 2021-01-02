@@ -61,12 +61,12 @@ func (n *LineCommentNode) Equals(m sparse.Node) bool {
 }
 
 // Child ...
-func (n *LineCommentNode) Child(i int) sparse.Node {
+func (n *LineCommentNode) Child(i uint) sparse.Node {
 	panic("Nodes of type 'LineCommentNode' don't have children")
 }
 
 // Children ...
-func (n *LineCommentNode) Children() int {
+func (n *LineCommentNode) Children() uint {
 	panic("Nodes of type 'LineCommentNode' don't have children")
 }
 

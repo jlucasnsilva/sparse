@@ -129,12 +129,12 @@ func (n *FloatNode) Equals(m sparse.Node) bool {
 }
 
 // Child ...
-func (n *FloatNode) Child(i int) sparse.Node {
+func (n *FloatNode) Child(i uint) sparse.Node {
 	panic("Nodes of type 'FloatNode' don't have children")
 }
 
 // Children ...
-func (n *FloatNode) Children() int {
+func (n *FloatNode) Children() uint {
 	panic("Nodes of type 'FloatNode' don't have children")
 }
 
@@ -155,12 +155,12 @@ func (n *IntNode) Equals(m sparse.Node) bool {
 }
 
 // Child ...
-func (n *IntNode) Child(i int) sparse.Node {
+func (n *IntNode) Child(i uint) sparse.Node {
 	panic("Nodes of type 'IntNode' don't have children")
 }
 
 // Children ...
-func (n *IntNode) Children() int {
+func (n *IntNode) Children() uint {
 	panic("Nodes of type 'IntNode' don't have children")
 }
 
