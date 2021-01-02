@@ -17,6 +17,17 @@ func Or(parsers ...ParserFunc) ParserFunc {
 	}
 }
 
+// Maybe ...
+func Maybe(parser ParserFunc) ParserFunc {
+	return func(s Scanner) (Scanner, Node, error) {
+		next, node, err := parser(s)
+		if err != nil {
+			return s, nil, nil
+		}
+		return next, node, nil
+	}
+}
+
 // Switch ...
 func Switch(switcher Switcher) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
@@ -76,7 +87,6 @@ func Some(target ParserFunc, separator ParserFunc) func(NodeBuilder) ParserFunc 
 			}
 		}
 	}
-
 }
 
 // Concat ...
@@ -97,5 +107,25 @@ func Concat(parsers ...ParserFunc) func(NodeBuilder) ParserFunc {
 			}
 			return r, b.Build(), nil
 		}
+	}
+}
+
+// Pad ...
+func Pad(parser ParserFunc, padding ParserFunc) ParserFunc {
+	return func(s Scanner) (Scanner, Node, error) {
+		var (
+			r    Scanner
+			node Node
+			err  error
+		)
+
+		pad := Maybe(padding)
+		r, _, _ = pad(s)
+		r, node, err = parser(r)
+		if err != nil {
+			return s, nil, err
+		}
+		r, _, _ = pad(r)
+		return r, node, nil
 	}
 }
