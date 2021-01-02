@@ -1,6 +1,8 @@
 package sparse
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type (
 	// Switcher ...

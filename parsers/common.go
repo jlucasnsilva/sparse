@@ -51,7 +51,7 @@ func toString(nodeType string, row, col int, value interface{}, pairs ...interfa
 		fmt.Fprintf(&b, ", %v: %v", pairs[i], pairs[i+1])
 	}
 	return fmt.Sprintf(
-		"%v{ Row: %v, Col: %v, Value «%v»%v }",
+		"parsers.%v{ Row: %v, Col: %v, Value «%v»%v }",
 		nodeType, row, col, value, b.String(),
 	)
 }
