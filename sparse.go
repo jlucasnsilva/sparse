@@ -19,11 +19,11 @@ type (
 		Child(uint) Node
 		Children() uint
 	}
-)
 
-// Error ...
-func Error(err error) ParserFunc {
-	return func(s Scanner) (Scanner, Node, error) {
-		return s, nil, err
+	// NodeBuilder ...
+	NodeBuilder interface {
+		Build() Node
+		Add(Node)
+		Reset()
 	}
-}
+)
