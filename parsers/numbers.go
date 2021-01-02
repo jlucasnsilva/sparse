@@ -42,31 +42,79 @@ func Number(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 }
 
 func createNumber(value string, row, col int) (sparse.Node, error) {
-	isFloat := func(s string) bool {
-		return strings.ContainsRune(s, '.')
-	}
-
-	if slen := len(value); slen < 1 || isFloat(value) && slen < 2 {
+	isFloat := strings.ContainsRune(value, '.')
+	if slen := len(value); slen < 1 || isFloat && slen < 2 {
 		return nil, errors.New("Not a number")
 	}
 
 	var (
 		node sparse.Node
+		fv   float64
+		iv   uint64
 		err  error
 	)
-	if isFloat(value) {
-		fnode := &FloatNode{Row: row, Col: col}
-		fnode.Value, err = strconv.ParseFloat(value, 64)
-		node = fnode
+	if isFloat {
+		fv, err = strconv.ParseFloat(value, 64)
+		if err != nil {
+			node = &FloatNode{Row: row, Col: col, Value: fv}
+		}
 	} else {
-		inode := &IntNode{Row: row, Col: col}
-		inode.Value, err = strconv.ParseUint(value, 10, 64)
-		node = inode
+		iv, err = strconv.ParseUint(value, 10, 64)
+		if err != nil {
+			node = &IntNode{Row: row, Col: col, Value: iv}
+		}
 	}
 	if err != nil {
 		return nil, err
 	}
 	return node, nil
+}
+
+// Float ...
+func Float(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	isFloat := false
+	foundDot := false
+	check := func(r rune) bool {
+		if foundDot {
+			isFloat = true
+		}
+		if r == '.' {
+			foundDot = true
+		}
+		return unicode.IsDigit(r) || r == '.' && !isFloat
+	}
+	return parseValueWithWhile(s, check, createFloat)
+}
+
+func createFloat(value string, row, col int) (sparse.Node, error) {
+	if slen := len(value); slen < 1 || strings.ContainsRune(value, '.') && slen < 2 {
+		return nil, errors.New("Not a number")
+	}
+
+	fvalue, err := strconv.ParseFloat(value, 64)
+	if err != nil {
+		return nil, err
+	}
+	result := &FloatNode{Row: row, Col: col, Value: fvalue}
+	return result, nil
+}
+
+// Int ...
+func Int(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
+	return parseValueWithWhile(s, unicode.IsDigit, createInt)
+}
+
+func createInt(value string, row, col int) (sparse.Node, error) {
+	if slen := len(value); slen < 1 {
+		return nil, errors.New("Not a number")
+	}
+
+	ivalue, err := strconv.ParseUint(value, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	result := &IntNode{Row: row, Col: col, Value: ivalue}
+	return result, nil
 }
 
 // Position ...
