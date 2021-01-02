@@ -128,16 +128,6 @@ func (n *FloatNode) Equals(m sparse.Node) bool {
 	return ok && v.Value == n.Value
 }
 
-// Child ...
-func (n *FloatNode) Child(i uint) sparse.Node {
-	panic("Nodes of type 'FloatNode' don't have children")
-}
-
-// Children ...
-func (n *FloatNode) Children() uint {
-	panic("Nodes of type 'FloatNode' don't have children")
-}
-
 // String ...
 func (n *FloatNode) String() string {
 	return toString("FloatNode", n.Row, n.Col, n.Value)
@@ -152,16 +142,6 @@ func (n *IntNode) Position() (int, int) {
 func (n *IntNode) Equals(m sparse.Node) bool {
 	v, ok := m.(*IntNode)
 	return ok && v.Value == n.Value
-}
-
-// Child ...
-func (n *IntNode) Child(i uint) sparse.Node {
-	panic("Nodes of type 'IntNode' don't have children")
-}
-
-// Children ...
-func (n *IntNode) Children() uint {
-	panic("Nodes of type 'IntNode' don't have children")
 }
 
 // String ...

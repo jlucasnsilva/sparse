@@ -14,10 +14,8 @@ type (
 	// Node ...
 	Node interface {
 		fmt.Stringer
-		Position() (int, int)
 		Equals(Node) bool
-		Child(uint) Node
-		Children() uint
+		Position() (int, int)
 	}
 
 	// NodeBuilder ...

@@ -93,16 +93,6 @@ func (n *StringNode) Equals(m sparse.Node) bool {
 	return ok && v.Value == n.Value && v.Bracket == n.Bracket
 }
 
-// Child ...
-func (n *StringNode) Child(i uint) sparse.Node {
-	panic("Nodes of type 'StringNode' don't have children")
-}
-
-// Children ...
-func (n *StringNode) Children() uint {
-	panic("Nodes of type 'StringNode' don't have children")
-}
-
 // Position ...
 func (n *StringNode) Position() (int, int) {
 	return n.Row, n.Col

@@ -66,16 +66,6 @@ func (n *RuneNode) Equals(m sparse.Node) bool {
 	return ok && v.Value == n.Value
 }
 
-// Child ...
-func (n *RuneNode) Child(i uint) sparse.Node {
-	panic("Nodes of type 'RuneNode' don't have children")
-}
-
-// Children ...
-func (n *RuneNode) Children() uint {
-	panic("Nodes of type 'RuneNode' don't have children")
-}
-
 // String ...
 func (n *RuneNode) String() string {
 	v := fmt.Sprintf("%c", n.Value)

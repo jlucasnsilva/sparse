@@ -49,16 +49,6 @@ func (n *CharNode) Equals(m sparse.Node) bool {
 	return ok && v.Value == n.Value
 }
 
-// Child ...
-func (n *CharNode) Child(i uint) sparse.Node {
-	panic("Nodes of type 'CharNode' don't have children")
-}
-
-// Children ...
-func (n *CharNode) Children() uint {
-	panic("Nodes of type 'CharNode' don't have children")
-}
-
 // String ...
 func (n *CharNode) String() string {
 	return toString("CharNode", n.Row, n.Col, fmt.Sprintf("'%c'", n.Value))

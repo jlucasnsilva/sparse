@@ -167,16 +167,6 @@ func (n *SpaceNode) Equals(m sparse.Node) bool {
 	return ok
 }
 
-// Child ...
-func (n *SpaceNode) Child(i uint) sparse.Node {
-	panic("Nodes of type 'NewlineNode' don't have children")
-}
-
-// Children ...
-func (n *SpaceNode) Children() uint {
-	panic("Nodes of type 'NewlineNode' don't have children")
-}
-
 // Position ...
 func (n *SpaceNode) Position() (int, int) {
 	return n.Row, n.Col

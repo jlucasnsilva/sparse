@@ -60,16 +60,6 @@ func (n *LineCommentNode) Equals(m sparse.Node) bool {
 	return ok && v.Value == n.Value
 }
 
-// Child ...
-func (n *LineCommentNode) Child(i uint) sparse.Node {
-	panic("Nodes of type 'LineCommentNode' don't have children")
-}
-
-// Children ...
-func (n *LineCommentNode) Children() uint {
-	panic("Nodes of type 'LineCommentNode' don't have children")
-}
-
 // String ...
 func (n *LineCommentNode) String() string {
 	return toString("LineCommentNode", n.Row, n.Col, n.Value)

@@ -53,16 +53,6 @@ func (n *SequenceNode) Equals(m sparse.Node) bool {
 	return ok && v.Value == n.Value
 }
 
-// Child ...
-func (n *SequenceNode) Child(i uint) sparse.Node {
-	panic("Nodes of type 'SequenceNode' don't have children")
-}
-
-// Children ...
-func (n *SequenceNode) Children() uint {
-	panic("Nodes of type 'SequenceNode' don't have children")
-}
-
 // String ...
 func (n *SequenceNode) String() string {
 	return toString("SequenceNode", n.Row, n.Col, n.Value)
