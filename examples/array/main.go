@@ -6,88 +6,82 @@ import (
 	"strings"
 
 	"github.com/jlucasnsilva/sparse"
+	"github.com/jlucasnsilva/sparse/nodebuilders"
 	"github.com/jlucasnsilva/sparse/parsers"
 )
 
 type (
-	arrayBuilder struct {
-		array []sparse.Node
-	}
-
-	array struct {
-		array []sparse.Node
+	arrayNodeBuilder struct {
+		array sparse.Node
+		count int
 	}
 )
 
-func main() {
-	b1 := newArrayBuilder()
-	b2 := newArrayBuilder()
-	text := "[1, 2, 3, 4, 5]"
-	rdr := strings.NewReader(text)
+var (
+	arrayStartParser = sparse.Pad(
+		parsers.ThisRune('['),
+		parsers.Space,
+	)
 
+	arrayEndParser = sparse.Pad(
+		parsers.ThisRune(']'),
+		parsers.Space,
+	)
+
+	arrayValueDelim = sparse.Pad(
+		parsers.ThisRune(','),
+		parsers.Space,
+	)
+
+	listParser = sparse.Some(
+		parsers.Int,
+		arrayValueDelim,
+	)
+
+	arrayParserBuilder = sparse.And(
+		arrayStartParser,
+		listParser(&nodebuilders.Array{}),
+		arrayEndParser,
+	)
+
+	arrayParser = arrayParserBuilder(&arrayNodeBuilder{})
+)
+
+func main() {
+	text := "    [1, 2, 3,     4    , 5]"
+	rdr := strings.NewReader(text)
 	s, err := sparse.NewScanner(rdr)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	list := sparse.Some(
-		parsers.Int,
-		parsers.Sequence(", "),
-	)
-	expr := sparse.And(
-		parsers.ThisRune('['),
-		list(b1),
-		parsers.ThisRune(']'),
-	)
-	p := expr(b2)
-
-	_, node, err := p(s)
+	fmt.Printf("Parsing the string '%s':\n\n", text)
+	_, node, err := arrayParser(s)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println(node)
-}
-
-func newArrayBuilder() *arrayBuilder {
-	return &arrayBuilder{array: make([]sparse.Node, 0, 10)}
-}
-
-func (a *arrayBuilder) Add(n sparse.Node) {
-	a.array = append(a.array, n)
-}
-
-func (a *arrayBuilder) Reset() {
-	a.array = a.array[:0]
-}
-
-func (a *arrayBuilder) Build() sparse.Node {
-	return &array{array: a.array}
-}
-
-func (a *array) Position() (int, int) {
-	return a.array[0].Position()
-}
-
-func (a *array) Equals(n sparse.Node) bool {
-	// TODO
-	return false
-}
-
-func (a *array) Child(i int) sparse.Node {
-	if i >= 0 && i < len(a.array) {
-		return a.array[i]
+	if arr, ok := node.(*nodebuilders.ArrayNode); ok {
+		for _, v := range arr.Value {
+			fmt.Println(v)
+		}
 	}
-	return nil
 }
 
-func (a *array) Children() int {
-	return len(a.array)
+// Build ...
+func (b *arrayNodeBuilder) Build() sparse.Node {
+	return b.array
 }
 
-func (a *array) String() string {
-	s := ""
-	for _, node := range a.array {
-		s += node.String() + "\n"
+// Add ...
+func (b *arrayNodeBuilder) Add(n sparse.Node) {
+	b.count++
+	if b.count == 2 {
+		b.array = n
 	}
-	return s
+}
+
+// Reset ...
+func (b *arrayNodeBuilder) Reset() {
+	b.count = 0
+	b.array = nil
 }
