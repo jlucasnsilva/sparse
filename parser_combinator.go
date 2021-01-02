@@ -53,7 +53,9 @@ func And(parsers ...ParserFunc) func(NodeBuilder) ParserFunc {
 				}
 				b.Add(node)
 			}
-			return r, b.Build(), nil
+			result := b.Build()
+			b.Reset()
+			return r, result, nil
 		}
 	}
 }
@@ -77,7 +79,9 @@ func Some(target ParserFunc, separator ParserFunc) func(NodeBuilder) ParserFunc 
 
 			for {
 				if t, node, err = separator(t); err != nil {
-					return r, b.Build(), nil
+					result := b.Build()
+					b.Reset()
+					return r, result, nil
 				}
 				if t, node, err = target(t); err != nil {
 					return r, nil, errors.New("expression ended on a separator")
@@ -101,11 +105,15 @@ func Concat(parsers ...ParserFunc) func(NodeBuilder) ParserFunc {
 			for _, p := range parsers {
 				r, node, err = p(r)
 				if err != nil {
-					return r, b.Build(), err
+					result := b.Build()
+					b.Reset()
+					return r, result, err
 				}
 				b.Add(node)
 			}
-			return r, b.Build(), nil
+			result := b.Build()
+			b.Reset()
+			return r, result, nil
 		}
 	}
 }
