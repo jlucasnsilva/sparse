@@ -38,7 +38,7 @@ func Sequence(sequence string) sparse.ParserFunc {
 			Col:   col,
 			Value: sequence,
 		}
-		return s, result, nil
+		return r, result, nil
 	}
 }
 

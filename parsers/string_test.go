@@ -26,11 +26,11 @@ var (
 	}
 )
 
-func TestParseString(t *testing.T) {
+func TestString(t *testing.T) {
 	for _, testCase := range stringParserTestCases {
 		test := testCase
 		t.Run(test.in, func(t *testing.T) {
-			expect := String{Value: test.expect, Bracket: test.bracket}
+			expect := StringNode{Value: test.expect, Bracket: test.bracket}
 
 			r := strings.NewReader(test.in)
 			s, err := sparse.NewScanner(r)
@@ -38,7 +38,7 @@ func TestParseString(t *testing.T) {
 				t.Errorf("Failed to create the scanner: %v", err)
 			}
 
-			_, n, err := ParseString(test.bracket)(s)
+			_, n, err := String(test.bracket)(s)
 			switch {
 			case !test.isError && err != nil:
 				t.Errorf("Got an error when none was expected: %v", err)
