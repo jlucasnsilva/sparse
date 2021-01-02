@@ -48,7 +48,7 @@ func TestLineComment(t *testing.T) {
 			case !test.err && err != nil:
 				t.Errorf("no error was expected, got: %v", err)
 			case !test.err && !ok:
-				t.Errorf("expected a BoolNode, got '%T'", node)
+				t.Errorf("expected a LineCommentNode, got '%T'", node)
 			case !test.err && b.Value != test.expect:
 				t.Errorf("expected '%v', got '%v'", test.expect, b.Value)
 			}
