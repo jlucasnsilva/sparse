@@ -78,5 +78,6 @@ func (n *RuneNode) Children() int {
 
 // String ...
 func (n *RuneNode) String() string {
-	return toString("RuneNode", n.Row, n.Col, n.Value)
+	v := fmt.Sprintf("%c", n.Value)
+	return toString("RuneNode", n.Row, n.Col, v)
 }

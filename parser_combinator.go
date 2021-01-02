@@ -45,7 +45,6 @@ func And(parsers ...ParserFunc) func(NodeBuilder) ParserFunc {
 			return r, b.Build(), nil
 		}
 	}
-
 }
 
 // Some ...
@@ -63,9 +62,10 @@ func Some(target ParserFunc, separator ParserFunc) func(NodeBuilder) ParserFunc 
 				return s, nil, errors.New("not a single match")
 			}
 			b.Add(node)
+			t = r
 
-			for true {
-				if t, node, err = target(r); err != nil {
+			for {
+				if t, node, err = separator(t); err != nil {
 					return r, b.Build(), nil
 				}
 				if t, node, err = target(t); err != nil {
@@ -74,7 +74,6 @@ func Some(target ParserFunc, separator ParserFunc) func(NodeBuilder) ParserFunc 
 				b.Add(node)
 				r = t
 			}
-			return s, nil, nil
 		}
 	}
 
