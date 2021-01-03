@@ -55,12 +55,12 @@ func createNumber(value string, row, col int) (sparse.Node, error) {
 	)
 	if isFloat {
 		fv, err = strconv.ParseFloat(value, 64)
-		if err != nil {
+		if err == nil {
 			node = &FloatNode{Row: row, Col: col, Value: fv}
 		}
 	} else {
 		iv, err = strconv.ParseUint(value, 10, 64)
-		if err != nil {
+		if err == nil {
 			node = &IntNode{Row: row, Col: col, Value: iv}
 		}
 	}

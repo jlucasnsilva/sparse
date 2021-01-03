@@ -53,7 +53,7 @@ func (s Scanner) First() rune {
 // Consume ...
 func (s Scanner) Consume() (ch rune, next Scanner) {
 	if s.pos == len(s.text) {
-		s.err = io.EOF
+		s.err = fmt.Errorf("end of file (L%v C%v)", s.row, s.col)
 	}
 	if s.err != nil {
 		return 0, s
@@ -79,7 +79,7 @@ func (s Scanner) ConsumeWhile(pred func(rune) bool) (string, Scanner) {
 
 	tlen := len(s.text)
 	if s.pos == tlen {
-		s.err = io.EOF
+		s.err = fmt.Errorf("end of file (L%v C%v)", s.row, s.col)
 		return "", s
 	}
 

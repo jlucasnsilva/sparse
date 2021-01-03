@@ -43,7 +43,7 @@ func String(bracket rune) sparse.ParserFunc {
 			Value:   str,
 			Bracket: bracket,
 		}
-		return s, result, nil
+		return r, result, nil
 	}
 }
 
