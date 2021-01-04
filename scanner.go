@@ -8,7 +8,9 @@ import (
 )
 
 type (
-	// Scanner ...
+	// Scanner wraps the input text that controls consumption of
+	// the characters/runes and keeps track of the current line,
+	// column, and offset in the text.
 	Scanner struct {
 		text []rune
 		err  error
@@ -18,7 +20,7 @@ type (
 	}
 )
 
-// NewScanner ...
+// NewScanner creates a new scanner.
 func NewScanner(rdr io.Reader) (Scanner, error) {
 	scn := Scanner{}
 	b := bytes.Buffer{}
@@ -35,22 +37,26 @@ func NewScanner(rdr io.Reader) (Scanner, error) {
 	return scn, nil
 }
 
-// Position ...
+// Position returns current line and columns position of
+// "head" of the scanner in the text.
 func (s Scanner) Position() (row int, col int) {
 	return s.row, s.col
 }
 
-// Err ...
+// Err returns any error that occurred during the last call
+// to Consume or ConsumeWhile.
 func (s Scanner) Err() error {
 	return s.err
 }
 
-// First ...
+// First returns the character at the current offset/position
+// in the input text.
 func (s Scanner) First() rune {
 	return s.text[s.pos]
 }
 
-// Consume ...
+// Consume returns the character at the current offset/position
+// and a Scanner which the offset of increased by one.
 func (s Scanner) Consume() (ch rune, next Scanner) {
 	if s.pos == len(s.text) {
 		s.err = fmt.Errorf("end of file (L%v C%v)", s.row, s.col)
@@ -71,7 +77,9 @@ func (s Scanner) Consume() (ch rune, next Scanner) {
 	return ch, s
 }
 
-// ConsumeWhile ...
+// ConsumeWhile consumes runes from the input as long as the predicate
+// returns true. Then it returns a string with the consumed runes and
+// a scanner which the head of shifted by len(string) units.
 func (s Scanner) ConsumeWhile(pred func(rune) bool) (string, Scanner) {
 	if s.err != nil {
 		return "", s
@@ -101,7 +109,7 @@ func (s Scanner) ConsumeWhile(pred func(rune) bool) (string, Scanner) {
 	return string(s.text[start:s.pos]), s
 }
 
-// String ...
+// String returns the string representation of the scanner.
 func (s Scanner) String() string {
 	return fmt.Sprintf(
 		"text: %v, pos: %v (L%v, C%v), err = %v",

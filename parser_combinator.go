@@ -5,7 +5,9 @@ import (
 	"fmt"
 )
 
-// Or ...
+// Or returns a ParserFunc that consumes the input and returns
+// the node returned by the first parser among parsers that
+// didn't fail (returned error).
 func Or(parsers ...ParserFunc) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
 		for _, p := range parsers {
@@ -17,7 +19,8 @@ func Or(parsers ...ParserFunc) ParserFunc {
 	}
 }
 
-// Dismiss ...
+// Dismiss returns a ParserFunc that returns the input after being
+// consumed by parser and a nil node.
 func Dismiss(parser ParserFunc) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
 		r, _, err := parser(s)
@@ -28,7 +31,9 @@ func Dismiss(parser ParserFunc) ParserFunc {
 	}
 }
 
-// Maybe ...
+// Maybe returns a ParserFunc that returns that received input if
+// parser fails and returns the consumed input and created node by
+// parser otherwise.
 func Maybe(parser ParserFunc) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
 		next, node, err := parser(s)
@@ -39,7 +44,8 @@ func Maybe(parser ParserFunc) ParserFunc {
 	}
 }
 
-// Switch ...
+// Switch returns a ParserFunc which selects a parsers registered in
+// Switcher based on the first character of the input.
 func Switch(switcher Switcher) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
 		parser := switcher.Switch(s.First())
@@ -47,7 +53,9 @@ func Switch(switcher Switcher) ParserFunc {
 	}
 }
 
-// And ...
+// And tries to match the input against all the passed parsers and
+// feeds the created nodes to a NodeBuilder. If any of the parsers
+// fails, it'll also fail.
 func And(parsers ...ParserFunc) func(NodeBuilder) ParserFunc {
 	return func(b NodeBuilder) ParserFunc {
 		return func(s Scanner) (Scanner, Node, error) {
@@ -71,7 +79,8 @@ func And(parsers ...ParserFunc) func(NodeBuilder) ParserFunc {
 	}
 }
 
-// Some ...
+// Some will try to match one or more values described by the parser
+// 'target' separated by the parser 'separator'.
 func Some(target ParserFunc, separator ParserFunc) func(NodeBuilder) ParserFunc {
 	return func(b NodeBuilder) ParserFunc {
 		return func(s Scanner) (Scanner, Node, error) {
@@ -129,7 +138,8 @@ func Concat(parsers ...ParserFunc) func(NodeBuilder) ParserFunc {
 	}
 }
 
-// Pad ...
+// Pad returns a ParserFunc that consume the input as if it was fed
+// to the passed parsers in following order: padding, parser, padding.
 func Pad(parser ParserFunc, padding ParserFunc) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
 		var (
