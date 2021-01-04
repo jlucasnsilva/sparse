@@ -146,7 +146,7 @@ func Space(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
 
 // DismissSpace ...
 func DismissSpace(s sparse.Scanner) (sparse.Scanner, sparse.Node, error) {
-	return parseValueWithWhile(s, isBlank, dismissSpace)
+	return parseValueWithWhile(s, unicode.IsSpace, dismissSpace)
 }
 
 func parseSpace(value string, row, col int) (sparse.Node, error) {

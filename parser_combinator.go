@@ -17,6 +17,17 @@ func Or(parsers ...ParserFunc) ParserFunc {
 	}
 }
 
+// Dismiss ...
+func Dismiss(parser ParserFunc) ParserFunc {
+	return func(s Scanner) (Scanner, Node, error) {
+		r, _, err := parser(s)
+		if err != nil {
+			return s, nil, err
+		}
+		return r, nil, nil
+	}
+}
+
 // Maybe ...
 func Maybe(parser ParserFunc) ParserFunc {
 	return func(s Scanner) (Scanner, Node, error) {
